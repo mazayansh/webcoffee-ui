@@ -4,18 +4,49 @@ import FilterProductSidebarMobile from '@/components/FilterProductSidebarMobile.
 import BaseSelect from '@/components/forms/BaseSelect.vue'
 import ProductGridItem from '@/components/ProductGridItem.vue'
 import Pagination from '@/components/Pagination.vue'
-import Overlay from '@/components/Overlay.vue'
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useRoastStore } from '@/stores/roast.js'
+import { useCoffeeTypeStore } from '@/stores/coffeeType.js'
+import { useProductStore } from '@/stores/product.js'
 
-const visible = false
 const sortOptions = [
-	{ label: 'Sort by - Featured', value: 'featured' },
-	{ label: 'Sort by - Price, low to high', value: 'price-asc' },
-	{ label: 'Sort by - Price, high to low', value: 'price-desc' },
-	{ label: 'Sort by - Price, old to new', value: 'date-asc' },
-	{ label: 'Sort by - Price, new to old', value: 'date-desc' }
+	{ label: 'Featured', value: '-created_at' },
+	{ label: 'Sort by - Price, low to high', value: '+price' },
+	{ label: 'Sort by - Price, high to low', value: '-price' },
 ]
-let sort = ref('featured')
+let sort = ref('-created_at')
+
+const { roasts } = storeToRefs(useRoastStore())
+const { coffeeTypes } = storeToRefs(useCoffeeTypeStore())
+const { products, meta } = storeToRefs(useProductStore())
+const { fetchRoastList } = useRoastStore()
+const { fetchCoffeeTypeList } = useCoffeeTypeStore()
+const { fetchProductList } = useProductStore()
+
+fetchRoastList()
+fetchCoffeeTypeList()
+
+watchEffect(() => {
+	fetchProductList(1,encodeURIComponent(sort.value))
+})
+
+const filterData = ref([
+	{
+		id: 1,
+		title: 'roast',
+		filterQueryName: 'roast',
+		items: roasts
+	},
+	{
+		id: 2,
+		title: 'coffee type',
+		filterQueryName: 'type',
+		items: coffeeTypes
+	}
+])
+
+let resetFilterActiveStatus = ref(false)
 </script>
 
 <template>
@@ -31,24 +62,22 @@ let sort = ref('featured')
 					coffee online here.</p>
 			</div>
 			<div class="grid grid-cols-4 mt-12">
-				<FilterProductSidebar :title="'roast'" />
+				<FilterProductSidebar :filter-data="filterData" :reset-filter-active-status="resetFilterActiveStatus" />
 
 				<div class="col-span-4 lg:col-start-2 lg:col-span-3">
 					<div class="flex flex-col gap-y-4 md:flex-row md:justify-between md:items-center md:gap-x-4 lg:justify-end">
 						
-						<FilterProductSidebarMobile v-if="visible" />
+						<FilterProductSidebarMobile :filter-data="filterData" :reset-filter-active-status="resetFilterActiveStatus" />
 						
-						<BaseSelect :label="'Sort'" :name="'name'" :options="sortOptions" v-model="sort" />
+						<BaseSelect :label="'Sort'" :name="'sort'" :options="sortOptions" v-model="sort" />
 					</div>
 					<div class="grid grid-cols-2 md:grid-cols-3 gap-4 py-6">
-						<ProductGridItem />
+						<ProductGridItem v-for="product in products" :key="product.id" :product="product" />
 					</div>
 				</div>
 			</div>
 
-			<Pagination />
+			<Pagination v-if="meta.last_page > 1" :meta="meta" @pagination-change-page="fetchProductList"/>
 		</div>
   </main>
-
-  <Overlay v-if="visible" />
 </template>

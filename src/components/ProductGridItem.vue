@@ -1,18 +1,22 @@
+<script setup>
+defineProps(['product'])
+</script>
+
 <template>
     <div class="flex flex-col items-stretch gap-y-4 text-center">
         <div class="flex flex-col">
             <div class="overflow-hidden">
-                <a href="/src/product.html">
-                    <img src="../assets/images/Bali-Blue-Moon-Dark-Roast-Coffee-Coffee-Bean-_-Tea-Leaf-Store-1619088898_1512x.webp"
-                        alt="Bali Blue Moon Dark Roast Coffee"
+                <router-link :to="{name: 'product', params: {id: product.id}}">
+                    <img :src="product.featured_image_url"
+                        :alt="product.slug"
                         class="transition-all delay-75 ease-out hover:brightness-75 hover:scale-110">
-                </a>
+                </router-link>
             </div>
         </div>
         <h2 class="uppercase font-bold text-lg hover:text-purple-900">
-            <a href="/src/product.html">Bali Blue Moon Dark Roast Coffee</a>
+            <router-link :to="{name: 'product', params: {id: product.id}}">{{ product.name }}</router-link>
         </h2>
-        <p>Nectarine, gardenia, pine</p>
-        <p class="text-lg">IDR 159.999,-</p>
+        <p>{{ product.aftertaste }}</p>
+        <p class="text-lg">{{ $filters.formatRupiah(parseInt(product.price)) }}</p>
     </div>
 </template>

@@ -2,12 +2,19 @@
 import { RouterLink, RouterView } from 'vue-router'
 import MainHeader from '@/components/Header.vue'
 import MainFooter from '@/components/Footer.vue'
+import Overlay from '@/components/Overlay.vue'
+import { useIndexStore } from '@/stores/index.js'
+import { storeToRefs } from 'pinia'
+
+let { isOverlayVisible } = storeToRefs(useIndexStore())
 </script>
 
 <template>
-  <main-header />
+  <MainHeader />
 
   <RouterView />
 
-  <main-footer />
+  <MainFooter />
+
+  <Overlay v-show="isOverlayVisible" />
 </template>

@@ -1,21 +1,19 @@
-// import API from "./api.js"
+import api from "./api.js"
 
-// export default {
-//     auth() {
-//         return API.get("/user");
-//     },
-//     async login(formData) {
-//         // await Csrf.getCookie();
-
-//         return API.post("/login", formData);
-//     },
-//     register(formData) {
-//         return API.post("/register", formData);
-//     },
-//     updatePassword(form) {
-//         return API.patch('/account/password', form)
-//     },
-//     logout() {
-//         return API.post("/logout");
-//     }
-// }
+export default {
+	register(form) {
+        return api.post("/auth/register", form);
+    },
+    login(form) {
+        return api.post("/auth/login", form);
+    },
+    // updatePassword(form) {
+    //     return api.patch('/account/password', form)
+    // },
+    logout() {
+        return api.post("/auth/logout");
+    },
+    profile() {
+        return api.get("/user-profile");
+    },
+}

@@ -1,12 +1,18 @@
-// import axios from "axios";
+import axios from "axios"
+import { useUserStore } from "@/stores/user.js"
 
-// const apiClient = axios.create({
-//     baseURL: `http://localhost:8000/api/v1`,
-//     withCredentials: true,
-//     headers: {
-//         Accept: 'application/json',
-//         'Content-Type': 'application/json'
-//     }
-// });
+const apiClient = axios.create({
+    baseURL: import.meta.env.VITE_API_URL,
+    withCredentials: true,
+    headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+    }
+})
 
-// export default apiClient;
+apiClient.interceptors.request.use(config => {
+    config.headers.Authorization = `Bearer ${useUserStore().user.access_token}`
+    return config
+})
+
+export default apiClient
