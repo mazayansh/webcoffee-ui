@@ -8,5 +8,8 @@ export default {
             uri = `${uri}&filter=${filter}`
         }
         return api.get(uri)
+    },
+    getById(id) {
+        return api.get(`/products/${id}`)
     }
 }
