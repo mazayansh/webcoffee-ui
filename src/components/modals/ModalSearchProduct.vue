@@ -7,7 +7,7 @@ const { toggleSearchModal } = useIndexStore()
 </script>
 
 <template>
-    <div class="bg-white w-full absolute top-1/2 -translate-y-1/2 md:left-1/2 md:-translate-x-1/2 z-20">
+    <div class="bg-white w-full lg:w-1/2 absolute top-1/2 -translate-y-1/2 md:left-1/2 md:-translate-x-1/2 z-20 rounded-md">
 		<div class="flex py-4 px-6 bg-gray-200">
 			<div class="flex-1 text-center font-bold">
 				SEARCH

@@ -1,6 +1,38 @@
 <script setup>
 import CartRowItem from "@/components/CartRowItem.vue"
 import IconChevronRight from "@/components/icons/IconChevronRight.vue"
+import { useCartStore } from "@/stores/cart.js"
+import cartApi from "@/services/cart.js"
+import { storeToRefs } from "pinia"
+import { computed } from "vue"
+
+const { fetchCartItemList }  = useCartStore()
+const { cartItems } = storeToRefs(useCartStore())
+
+fetchCartItemList()
+
+let isCartEmpty = computed(() => {
+    return cartItems.value.length < 1
+})
+
+const totalPrice = computed(() => {
+    return cartItems.value.reduce((accumulator, currentCartItem) => {
+        return accumulator + parseInt(currentCartItem.price)
+    }, 0)
+})
+
+function updateCartItem(cartItem) {
+    cartApi.updateCartItem(cartItem.id, {quantity: cartItem.quantity})
+}
+
+function removeCartItem(cartItemId) {
+    cartApi.removeCartItem(cartItemId)
+        .then(response => {
+            cartItems.value = cartItems.value.filter((cartItem) => {
+                return cartItem.id != cartItemId
+            })
+        })
+}
 </script>
 
 <template>
@@ -9,7 +41,7 @@ import IconChevronRight from "@/components/icons/IconChevronRight.vue"
             <div>
                 <h1 class="text-xl font-semibold uppercase text-center">shopping cart</h1>
             </div>
-            <form action="/src/checkout.html" method="GET">
+            <div>
                 <div class="pt-10">
                     <div class="hidden md:flex md:justify-between md:items-center md:gap-y-4 py-4 border-b border-b-neutral-300">
                         <div class="capitalize basis-2/3">
@@ -19,33 +51,35 @@ import IconChevronRight from "@/components/icons/IconChevronRight.vue"
                             quantity
                         </div>
                         <div class="capitalize basis-1/6">
-                            total
+                            subtotal
                         </div>
                     </div>
-                    <cart-row-item />
+                    <div v-if="!isCartEmpty">
+                        <CartRowItem v-for="cartItem,index in cartItems" :key="index" :cart-item="cartItem" @update-cart-item="updateCartItem" @remove-cart-item="removeCartItem" />
+                        </div>
+                    <div v-else class="text-center py-8 px-4">
+                        <p>Keranjang belanja kosong</p>
+                    </div>
                 </div>
-                <div class="py-6 md:flex md:flex-row-reverse md:justify-between md:items-end">
+                <div v-if="!isCartEmpty" class="py-6 md:flex md:flex-row-reverse md:justify-between md:items-end">
                     <div class="flex flex-col justify-center text-center gap-y-4">
-                        <span class="uppercase text-lg font-semibold">SUBTOTAL IDR 319.998</span>
+                        <span class="uppercase text-lg font-semibold">TOTAL {{ $filters.formatRupiah(totalPrice) }}</span>
                         <p>Shipping & taxes calculated at checkout</p>
-                        <div class="flex flex-col md:flex-row gap-y-2 md:gap-x-2">
-                            <button class="bg-neutral-300 uppercase py-2 md:px-6 font-semibold">
-                                update cart
-                            </button>
-                            <button type="submit" class="bg-purple-900 text-white uppercase py-2 md:px-6 font-semibold">
+                        <div class="flex flex-col justify-end md:flex-row gap-y-2 md:gap-x-2">
+                            <router-link :to="{ name: 'checkout' }" class="bg-purple-900 text-white uppercase py-2 md:px-6 font-semibold">
                                 check out
-                                <icon-chevron-right :class="'ml-2'"/>
-                            </button>
+                                <IconChevronRight :class="'ml-2'"/>
+                            </router-link>
                         </div>
                     </div>
                     <div class="grow-0 text-left">
-                        <a href="/src/product.html" class="uppercase hover:font-semibold">
-                            <icon-chevron-right :class="'rotate-180 mr-2'" />
+                        <router-link :to="{ name: 'home' }" class="uppercase hover:font-semibold">
+                            <IconChevronRight :class="'rotate-180 mr-2'" />
                             continue shopping
-                        </a>
+                        </router-link>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     </main>
 </template>

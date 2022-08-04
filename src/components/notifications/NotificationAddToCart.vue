@@ -29,7 +29,7 @@ defineProps(['cartItem'])
 					view cart
 					<IconChevronRight />
 				</router-link>
-				<button @click="$emit('closeAddToCartNotif')" class="uppercase py-2 px-4 border border-neutral-300 bg-white hover:bg-neutral-400">
+				<button @click="$emit('closeAddToCartNotif')" class="uppercase py-2 px-4 border border-neutral-300 bg-white hover:bg-neutral-200">
 					continue shopping
 				</button>
 			</div>

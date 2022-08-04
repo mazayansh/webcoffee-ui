@@ -163,7 +163,7 @@ onUpdated(() => {
 	                                    &#8722;
 	                                </button>
 	                                <input type="text" v-model="form.quantity" name="quantity" id="quantity" aria-valuemin="1" required aria-required="true" min="1"
-	                                    class="w-12 border-l border-l-neutral-300 p-2 bg-neutral-200 text-center focus:outline-none">
+	                                    class="w-12 border-l border-l-neutral-300 p-2 bg-neutral-200 text-center focus:outline-none" readonly>
 	                                <button 
 	                                	@click.prevent="increaseQuantity"
 	                                	class="border-l border-l-neutral-300 py-2 px-4">

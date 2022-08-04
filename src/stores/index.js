@@ -6,7 +6,8 @@ export const useIndexStore = defineStore({
     isOverlayVisible: false,
     isMobileMenuVisible: false,
     isModalSearchProductVisible: false,
-    isMobileFilterProductSidebarVisible: false
+    isMobileFilterProductSidebarVisible: false,
+    isModalConfirmRemoveCartItemVisible: false
   }),
   actions: {
     toggleOverlay() {
@@ -22,6 +23,11 @@ export const useIndexStore = defineStore({
     },
     toggleMobileFilterProductSidebar() {
       this.isMobileFilterProductSidebarVisible = !this.isMobileFilterProductSidebarVisible
+      const indexStore = useIndexStore()
+      indexStore.toggleOverlay()
+    },
+    toggleModalConfirmRemoveCartItem() {
+      this.isModalConfirmRemoveCartItemVisible = !this.isModalConfirmRemoveCartItemVisible
       const indexStore = useIndexStore()
       indexStore.toggleOverlay()
     }
