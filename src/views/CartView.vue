@@ -36,7 +36,7 @@ function removeCartItem(cartItemId) {
 </script>
 
 <template>
-    <main>
+    <main class="grow">
         <div class="py-10 px-6 lg:w-5/6 mx-auto">
             <div>
                 <h1 class="text-xl font-semibold uppercase text-center">shopping cart</h1>

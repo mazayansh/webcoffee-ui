@@ -2,6 +2,43 @@
 import Breadcumb from "@/components/navs/Breadcumb.vue"
 import IconChevronRight from "@/components/icons/IconChevronRight.vue"
 import CheckoutSummarySection from "@/components/CheckoutSummarySection.vue"
+import { ref } from "vue"
+import { useRouter } from "vue-router"
+import { storeToRefs } from "pinia"
+import { useCartStore } from "@/stores/cart.js"
+import cartApi from "@/services/cart.js"
+
+const { fetchCartItemList, fetchShippingInfo } = useCartStore()
+const { cartItems, shippingInformation } = storeToRefs(useCartStore())
+
+fetchCartItemList()
+fetchShippingInfo()
+
+const shippingMethodForm = ref({
+    shipping_method: ''
+})
+const shippingMethods = ref([])
+const errors = ref({})
+
+cartApi.getShippingMethod()
+    .then(response => {
+        shippingMethods.value = response.data.data
+    })
+
+const router = useRouter()
+
+function submitSelectedShippingMethod() {
+    cartApi.submitSelectedShippingMethod(shippingMethodForm.value)
+        .then(response => {
+            router.push({ name: 'payment' })
+        })
+        .catch(error => {
+            if(error.response.status == 422) {
+                errors.value = error.response.data.errors
+            }
+            console.log(error)
+        })
+}
 
 const breadcumbItems = [
     {
@@ -24,10 +61,10 @@ const breadcumbItems = [
 </script>
 
 <template>
-	<main>
+	<main class="grow">
         <div class="lg:flex lg:flex-row-reverse">
             <!-- start cart section -->
-            <CheckoutSummarySection />
+            <CheckoutSummarySection :cart-items=cartItems />
             <!-- end cart section -->
 
             <div class="p-4 md:w-8/12 mx-auto lg:basis-3/5">
@@ -40,18 +77,13 @@ const breadcumbItems = [
                         <div class="border border-neutral-300 px-4 rounded-md">
                             <div class="py-4 border-b border-b-neutral-300 grid grid-cols-5 items-start gap-2">
                                 <div class="row-start-1 col-start-1 col-span-4">Contact</div>
-                                <p class="row-start-2 col-start-1 col-span-4">s.imam29@gmail.com</p>
-                                <button class="capitalize font-semibold text-purple-900 row-start-1 row-span-2 col-start-5">
-                                    <a href="#">change</a>
-                                </button>
+                                <p class="row-start-2 col-start-1 col-span-4">{{ shippingInformation.email }}</p>
+                                <router-link :to="{ name: 'checkout' }" class="capitalize font-semibold text-purple-900 row-start-1 row-span-2 col-start-5">change</router-link>
                             </div>
                             <div class="py-4 grid grid-cols-5 content-start items-start gap-2">
                                 <div class="row-start-1 col-start-1 col-span-4">Ship to</div>
-                                <p class="row-start-2 col-start-1 col-span-4">Wungusari RT 16, Tegaldowo Gemolong Sragen 57274, Surakarta AZ
-                                    85018, United States</p>
-                                <button class="capitalize font-semibold text-purple-900 row-start-1 row-span-2 col-start-5">
-                                    <a href="#">change</a>
-                                </button>
+                                <p class="row-start-2 col-start-1 col-span-4">{{ shippingInformation.address }}</p>
+                                <router-link :to="{ name: 'checkout' }" class="capitalize font-semibold text-purple-900 row-start-1 row-span-2 col-start-5">change</router-link>
                             </div>
                         </div>
                     </div>
@@ -59,57 +91,31 @@ const breadcumbItems = [
 
                     <!-- shipping form -->
                     <div class="pt-10">
-                        <form action="/src/payment.html" method="GET" class="flex flex-col gap-y-4">
+                        <form action="" method="GET" class="flex flex-col gap-y-4" @submit.prevent="submitSelectedShippingMethod">
                             <div>
                                 <legend class="text-lg">Shipping method</legend>
                             </div>
                             <div class="px-4 border border-neutral-300 rounded-md">
-                                <div class="table py-4 border-b border-b-neutral-300">
+                                <div v-for="shippingMethod,index in shippingMethods" :key="index" class="table py-4 border-b border-b-neutral-300">
                                     <div class="table-cell pr-3 whitespace-nowrap">
                                         <input 
-                                            id="shipping-method-1" 
+                                            :id="`shipping-method-${index}`" 
+                                            v-model="shippingMethodForm.shipping_method"
+                                            :value="shippingMethod.shipping_method"
                                             type="radio" 
                                             name="shipping_method"
                                             class="cursor-pointer">
                                     </div>
-                                    <label for="shipping-method-1" class="table-cell w-full cursor-pointer">
+                                    <label :for="`shipping-method-${index}`" class="table-cell w-full cursor-pointer">
                                         <span class="table-cell w-full">
-                                            Standard Ground
+                                            {{ shippingMethod.shipping_method }}
                                             <br>
-                                            <small>Domestic</small>
+                                            <small>{{ shippingMethod.shipping_description }}</small>
+                                            <br>
+                                            <small>Estimated days: {{ shippingMethod.shipping_estimated_days }}</small>
                                         </span>
                                         <span class="table-cell w-full text-right font-semibold whitespace-nowrap pl-3">
-                                            Rp 24K
-                                        </span>
-                                    </label>
-                                </div>
-                                <div class="table py-4 border-b border-b-neutral-300">
-                                    <div class="table-cell pr-3 whitespace-nowrap">
-                                        <input id="shipping-method-2" type="radio" name="shipping_method" class="cursor-pointer">
-                                    </div>
-                                    <label for="shipping-method-2" class="table-cell w-full cursor-pointer">
-                                        <span class="table-cell w-full">
-                                            2-Day
-                                            <br>
-                                            <small>Domestic</small>
-                                        </span>
-                                        <span class="table-cell w-full text-right font-semibold whitespace-nowrap pl-3">
-                                            Rp 37K
-                                        </span>
-                                    </label>
-                                </div>
-                                <div class="table py-4">
-                                    <div class="table-cell pr-3 whitespace-nowrap">
-                                        <input id="shipping-method-3" type="radio" name="shipping_method" class="cursor-pointer">
-                                    </div>
-                                    <label for="shipping-method-3" class="table-cell w-full cursor-pointer">
-                                        <span class="table-cell w-full">
-                                            Overnight
-                                            <br>
-                                            <small>Domestic</small>
-                                        </span>
-                                        <span class="table-cell w-full text-right font-semibold whitespace-nowrap pl-3">
-                                            Rp 52K
+                                            {{ $filters.formatRupiah(parseInt(shippingMethod.shipping_cost)) }}
                                         </span>
                                     </label>
                                 </div>
@@ -124,10 +130,10 @@ const breadcumbItems = [
                                     </button>
                                 </div>
                                 <div>
-                                    <a href="/src/checkout.html" class="block w-full hover:font-semibold">
+                                    <router-link :to="{ name: 'checkout' }" class="block w-full hover:font-semibold">
                                         <IconChevronRight :class="'mr-2 rotate-180'" />
                                         Return to checkout details
-                                    </a>
+                                    </router-link>
                                 </div>
                             </div>
                         </form>

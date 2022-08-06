@@ -1,5 +1,8 @@
 <script setup>
-defineProps(['label','name','modelValue','error'])
+import { toRefs } from "vue"
+
+const props = defineProps(['label','name','modelValue','error'])
+const { label, name, modelValue, error } = toRefs(props)
 </script>
 
 <template>
@@ -28,7 +31,7 @@ defineProps(['label','name','modelValue','error'])
                 peer-focus:-top-0.5
                 peer-focus:text-neutral-900
                 peer-focus:text-sm">{{label}}</label>
-    <span v-if="error" class="text-red-600 hidden peer-focus:peer-invalid:block">
+    <span v-if="error" class="text-red-600 peer-focus:peer-invalid:block">
         {{ error }}
     </span>
 </template>

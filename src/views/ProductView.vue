@@ -18,12 +18,10 @@ fetchProductById(props.id)
 const breadcumbItems = reactive([
     {
         title: 'Home',
-        routeName: 'home',
-        isActive: false
+        routeName: 'home'
     },
     {
-        title: product.value.name ?? '',
-        isActive: false
+        title: product.value.name ?? ''
     },
 ])
 
@@ -115,7 +113,7 @@ onUpdated(() => {
 </script>
 
 <template>
-	<main>
+	<main class="grow">
 		
 		<NotificationAddToCart v-if="showAddToCartNotif" :cart-item="cartItem" @close-add-to-cart-notif="closeAddToCartNotif" />
 

@@ -3,7 +3,7 @@ defineProps(['label','name','modelValue','options','error'])
 </script>
 
 <template>
-	<label :for="name" class="font-semibold">{{label}}:</label>
+	<label v-if="label" :for="name" class="font-semibold">{{label}}:</label>
     <select 
         :name="name" 
         :id="name" 
@@ -13,6 +13,7 @@ defineProps(['label','name','modelValue','options','error'])
             onChange: ($event) => { $emit('update:modelValue', $event.target.value) }
         }"
         class="p-2 border border-neutral-300 md:flex-1 lg:flex-grow-0 focus:outline-none">
+        <slot name="placeholder"></slot>
         <option
             v-for="option,index in options"
             :value="option.value"

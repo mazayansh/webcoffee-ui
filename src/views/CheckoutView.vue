@@ -2,19 +2,58 @@
 import Breadcumb from "@/components/navs/Breadcumb.vue"
 import IconChevronRight from "@/components/icons/IconChevronRight.vue"
 import FloatLabelInput from "@/components/forms/FloatLabelInput.vue"
+import BaseSelect from "@/components/forms/BaseSelect.vue"
 import CheckoutSummarySection from "@/components/CheckoutSummarySection.vue"
-import { ref } from "vue"
+import { ref, watch } from "vue"
+import { useRouter } from "vue-router"
+import { storeToRefs } from "pinia"
+import { useCartStore } from "@/stores/cart.js"
+import cartApi from "@/services/cart.js"
+import rajanOngkirApi from "@/services/rajaOngkir.js"
 
-const shippingInfo = ref({
-    email: '',
-    firstName: '',
-    lastName: '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    postcode: ''
-})
+const { fetchCartItemList, fetchShippingInfo } = useCartStore()
+const { cartItems, shippingInformation } = storeToRefs(useCartStore())
+
+fetchCartItemList()
+fetchShippingInfo()
+
+const shippingInfo = shippingInformation
+
+const errors = ref({})
+
+const cityOptions = ref([])
+
+function collectCityOptions(cityCollection) {
+    for (let city of cityCollection) {
+        cityOptions.value.push({
+            label: city.city_name,
+            value: city.city_id,
+            state: city.province
+        })
+    }
+}
+
+rajanOngkirApi.getCityList()
+    .then(data => {
+        collectCityOptions(data)
+    })
+
+function setCityAndState() {
+    for (let city of cityOptions.value) {
+        if (city.value == shippingInfo.value.city_code) {
+            shippingInfo.value.city = city.label
+            shippingInfo.value.state = city.state
+            break
+        }
+    }
+}
+
+watch(
+    () => {
+        return shippingInfo.value.city_code
+    }, (newCityCode) => {
+        setCityAndState()
+    })
 
 const breadcumbItems = [
     {
@@ -34,13 +73,28 @@ const breadcumbItems = [
         routeName: 'payment'
     }
 ]
+
+const router = useRouter()
+
+function submitShippingAddress() {
+    cartApi.saveShippingAddress(shippingInfo.value)
+        .then(response => {
+            useCartStore().shippingInformation = shippingInfo.value
+            router.push({ name: 'shipping' })
+        })
+        .catch(error => {
+            if(error.response.status == 422) {
+                errors.value = error.response.data.errors
+            }
+        })
+}
 </script>
 
 <template>
-    <main>
+    <main class="grow">
         <div class="lg:flex lg:flex-row-reverse">
             <!-- start cart section -->
-            <CheckoutSummarySection />
+            <CheckoutSummarySection :cart-items=cartItems />
             <!-- end cart section -->
 
             <div class="p-4 md:w-8/12 mx-auto lg:basis-3/5">
@@ -48,111 +102,55 @@ const breadcumbItems = [
 
                     <Breadcumb :breadcumb-items="breadcumbItems" />
 
-                    <!-- express checkout payment -->
-                    <div class="text-center md:mt-10">
-                        <h3 class="
-                                capitalize 
-                                font-semibold
-                                md:flex 
-                                md:items-end 
-                                md:justify-center
-                                md:before:border-t 
-                                md:before:border-l
-                                md:before:border-neutral-300 
-                                md:before:rounded-tl-md
-                                md:before:mr-4 
-                                md:before:h-2
-                                md:before:grow 
-                                md:before:shrink-0 
-                                md:before:basis-8
-                                md:after:border-t 
-                                md:after:border-r
-                                md:after:border-neutral-300 
-                                md:after:rounded-tr-md
-                                md:after:ml-4 
-                                md:after:h-2
-                                md:after:grow 
-                                md:after:shrink-0 
-                                md:after:basis-8">
-                            express checkout
-                        </h3>
-                        <div class="
-                                flex flex-col md:flex-row 
-                                gap-y-4 md:gap-x-4 
-                                p-4 
-                                border-b border-b-neutral-300 
-                                md:border-x md:border-neutral-300 
-                                md:rounded-md 
-                                md:relative">
-                            <button class="p-4 bg-yellow-400 text-blue-900 rounded-md md:flex-1">
-                                <a href="#">PayPal</a>
-                            </button>
-                            <button class="p-4 bg-neutral-900 text-white rounded-md md:flex-1">
-                                <a href="#">GPay</a>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="mt-6">
-                        <p class="
-                            uppercase
-                            flex 
-                            items-end 
-                            justify-center
-                            before:border-t 
-                            before:border-neutral-300 
-                            before:mr-4 
-                            before:h-2
-                            before:grow 
-                            before:shrink-0 
-                            before:basis-8
-                            after:border-t 
-                            after:border-neutral-300 
-                            after:ml-4 
-                            after:h-2
-                            after:grow 
-                            after:shrink-0 
-                            after:basis-8">or</p>
-                    </div>
                     <!-- shipping form -->
                     <div class="py-6">
-                        <form action="#" class="flex flex-col gap-y-8">
-                            <div class="flex flex-col items-start lg:flex-row lg:justify-between lg:items-center gap-y-2">
+                        <form action="#" class="flex flex-col gap-y-8" @submit.prevent="submitShippingAddress">
+                            <div class="flex flex-col items-start xl:flex-row xl:justify-between xl:items-center gap-y-2">
                                 <legend class="text-lg">Contact information</legend>
                                 <span>
                                     Already have an account?
-                                    <a href="#" class="underline">Log in</a>
+                                    <router-link :to="{ name: 'login' }" class="underline">Log in</router-link>
                                 </span>
                             </div>
                             <div class="relative">
-                                <FloatLabelInput :label="'Email'" :name="'email'" :type="'email'" required="required" aria-required="true" v-model="shippingInfo.email"/>
+                                <FloatLabelInput :label="'Email'" :name="'email'" :type="'email'" required="required" aria-required="true" v-model="shippingInfo.email" :error="errors.email ? errors.email[0] : null" />
                             </div>
                             <div>
                                 <legend class="text-lg">Shipping address</legend>
                             </div>
-                            <div class="flex flex-col gap-y-4 md:flex-row md:gap-x-4 md:items-center">
+                            <div class="flex flex-col gap-y-4 md:flex-row md:gap-x-4 md:items-start">
                                 <div class="relative md:flex-1">
-                                    <FloatLabelInput :label="'First name'" :name="'first_name'" :type="'text'" required="required" aria-required="true" v-model="shippingInfo.firstName"/>
+                                    <FloatLabelInput :label="'First name'" :name="'first_name'" :type="'text'" required="required" aria-required="true" v-model="shippingInfo.first_name" :error="errors.first_name ? errors.first_name[0] : null"/>
                                 </div>
                                 <div class="relative md:flex-1">
-                                    <FloatLabelInput :label="'Last name'" :name="'last_name'" :type="'text'" required="required" aria-required="true" v-model="shippingInfo.lastName"/>
-                                </div>
-                            </div>
-                            <div class="relative">
-                                <FloatLabelInput :label="'Address'" :name="'address'" :type="'text'" required="required" aria-required="true" v-model="shippingInfo.address"/>
-                            </div>
-                            <div class="relative">
-                                <FloatLabelInput :label="'City'" :name="'city'" :type="'text'" required="required" aria-required="true" v-model="shippingInfo.city"/>
-                            </div>
-                            <div class="flex flex-col gap-y-4 md:flex-row md:gap-x-4 md:items-center">
-                                <div class="relative md:flex-1">
-                                    <FloatLabelInput :label="'State'" :name="'state'" :type="'text'" required="required" aria-required="true" v-model="shippingInfo.state"/>
-                                </div>
-                                <div class="relative md:flex-1">
-                                    <FloatLabelInput :label="'Post code'" :name="'postcode'" :type="'text'" required="required" aria-required="true" v-model="shippingInfo.postcode"/>
+                                    <FloatLabelInput :label="'Last name'" :name="'last_name'" :type="'text'" required="required" aria-required="true" v-model="shippingInfo.last_name" :error="errors.last_name ? errors.last_name[0] : null"/>
                                 </div>
                             </div>
                             <div class="relative">
-                                <FloatLabelInput :label="'Phone (optional)'" :name="'phone'" :type="'text'" v-model="shippingInfo.phone"/>
+                                <FloatLabelInput :label="'Address'" :name="'address'" :type="'text'" required="required" aria-required="true" v-model="shippingInfo.address" :error="errors.address ? errors.address[0] : null"/>
+                            </div>
+                            <div class="relative">
+                                <BaseSelect 
+                                    :name="'city_code'" 
+                                    :options="cityOptions" 
+                                    v-model="shippingInfo.city_code"
+                                    :class="['w-full bg-white', shippingInfo.state == '' ? 'text-neutral-500' : '']"
+                                    required="required" aria-required="true">
+                                        <template #placeholder>
+                                            <option value="" selected="selected">--- Select City ---</option>
+                                        </template>
+                                </BaseSelect>
+                            </div>
+                            <div class="flex flex-col gap-y-4 md:flex-row md:gap-x-4 md:items-start">
+                                <div class="relative md:flex-1">
+                                    <FloatLabelInput :label="'State'" :name="'state'" :type="'text'" required="required" aria-required="true" v-model="shippingInfo.state" :error="errors.state ? errors.state[0] : null"/>
+                                </div>
+                                <div class="relative md:flex-1">
+                                    <FloatLabelInput :label="'Post code'" :name="'postcode'" :type="'text'" required="required" aria-required="true" v-model="shippingInfo.postcode" :error="errors.postcode ? errors.postcode[0] : null"/>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <FloatLabelInput :label="'Phone (optional)'" :name="'phone'" :type="'text'" v-model="shippingInfo.phone" :error="errors.phone ? errors.phone[0] : null"/>
                             </div>
                             <div class="mt-4 flex flex-col gap-y-4 text-center lg:flex-row-reverse lg:justify-between lg:items-center">
                                 <div>
@@ -162,10 +160,10 @@ const breadcumbItems = [
                                     </button>
                                 </div>
                                 <div>
-                                    <a href="/src/cart.html" class="block w-full hover:font-semibold">
+                                    <router-link :to="{ name: 'cart' }" class="block w-full hover:font-semibold">
                                         <IconChevronRight :class="'mr-2 rotate-180'" />
                                         Return to cart
-                                    </a>
+                                    </router-link>
                                 </div>
                             </div>
                         </form>

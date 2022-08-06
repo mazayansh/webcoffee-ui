@@ -50,7 +50,7 @@ let resetFilterActiveStatus = ref(false)
 </script>
 
 <template>
-  <main>
+  <main class="grow">
     <div class="p-10 lg:w-5/6 mx-auto">
 			<div class="flex flex-col items-center text-center gap-y-4">
 				<h2 class="text-2xl font-bold uppercase tracking-widest">buy coffee online</h2>

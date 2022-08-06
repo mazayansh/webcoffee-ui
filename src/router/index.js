@@ -32,6 +32,11 @@ const router = createRouter({
       component: () => import('../views/PaymentView.vue')
     },
     {
+      path: '/payment-instruction',
+      name: 'payment-instruction',
+      component: () => import('../views/PaymentInstructionView.vue')
+    },
+    {
       path: '/shipping',
       name: 'shipping',
       component: () => import('../views/ShippingView.vue')
@@ -83,7 +88,11 @@ const router = createRouter({
     //         title: "Network Failure"
     //     }
     // }
-  ]
+  ],
+  scrollBehavior(to, from, savedPosition) {
+    // always scroll to top
+    return { top: 0 }
+  },
 })
 
 // router.beforeEach((toRoute, fromRoute, next) => {
