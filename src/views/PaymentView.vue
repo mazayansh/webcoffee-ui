@@ -56,7 +56,7 @@ const paymentMethods = [
 	{ id: 2, label: 'BNI Virtual Account', value: 'bni', icon_url: '/src/assets/images/bni.png' },
 	{ id: 3, label: 'BCA Virtual Account', value: 'bca', icon_url: '/src/assets/images/bca.png' },
 	{ id: 4, label: 'Mandiri Bill Payment', value: 'mandiri', icon_url: '/src/assets/images/mandiri.png' },
-	{ id: 5, label: 'Permata Bank Virtual Account', value: 'permata_bank', icon_url: '/src/assets/images/permata-bank.png' }
+	{ id: 5, label: 'Permata Bank Virtual Account', value: 'permata', icon_url: '/src/assets/images/permata-bank.png' }
 ]
 </script>
 
