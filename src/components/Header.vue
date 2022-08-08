@@ -8,6 +8,7 @@ import IconMinusSign from '@/components/icons/IconMinusSign.vue'
 import IconSearch from '@/components/icons/IconSearch.vue'
 import IconUser from '@/components/icons/IconUser.vue'
 import IconShopBag from '@/components/icons/IconShopBag.vue'
+import IconLogout from '@/components/icons/IconLogout.vue'
 import ModalSearchProduct from '@/components/modals/ModalSearchProduct.vue'
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
@@ -15,6 +16,10 @@ import { useIndexStore } from '@/stores/index.js'
 
 const { toggleMobileMenu, toggleSearchModal} = useIndexStore()
 let { isMobileMenuVisible, isModalSearchProductVisible } = storeToRefs(useIndexStore())
+
+function logout() {
+	console.log("logout")
+}
 </script>
 
 <template>
@@ -81,6 +86,9 @@ let { isMobileMenuVisible, isModalSearchProductVisible } = storeToRefs(useIndexS
 				<router-link :to="{name: 'cart'}" title="Cart">
 					<IconShopBag />
 				</router-link>
+				<button @click="logout" class="text-neutral-300">
+					<IconLogout />
+				</button>
 			</div>
 			<nav role="navigation" :class="[isMobileMenuVisible ? 'block' : 'hidden', 'bg-white']">
 				<ul class="pt-4 pb-10 px-6">
