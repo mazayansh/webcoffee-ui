@@ -20,14 +20,14 @@ fetchShippingInfo()
 
 const billingForm = ref({
 	payment_method: '',
-	same_as_shipping_address: true
+	same_as_shipping_address: "true"
 })
 
 const router = useRouter()
 function submitBillingInfo() {
 	orderApi.createOrder(billingForm.value)
 		.then(response => {
-			useOrderStore().paymentDetails = response.data.payment_detail
+			useOrderStore().paymentDetails = response.data.data
 			router.push({name: 'payment-instruction'})
 		})
 }
@@ -56,7 +56,7 @@ const paymentMethods = [
 	{ id: 2, label: 'BNI Virtual Account', value: 'bni', icon_url: '/src/assets/images/bni.png' },
 	{ id: 3, label: 'BCA Virtual Account', value: 'bca', icon_url: '/src/assets/images/bca.png' },
 	{ id: 4, label: 'Mandiri Bill Payment', value: 'mandiri', icon_url: '/src/assets/images/mandiri.png' },
-	{ id: 5, label: 'Permata Bank Virtual Account', value: 'permata', icon_url: '/src/assets/images/permata-bank.png' }
+	{ id: 5, label: 'Permata Bank Virtual Account', value: 'permata', icon_url: '/src/assets/images/permata.png' }
 ]
 </script>
 

@@ -80,7 +80,10 @@ function logout() {
 				<button title="Search" @click="toggleSearchModal">
 					<IconSearch />
 				</button>
-				<router-link :to="{ name: 'login' }" title="Login">
+				<router-link :to="{ name: 'login' }" title="Login" :class="'hidden'">
+					<IconUser />
+				</router-link>
+				<router-link :to="{ name: 'orders' }" title="Member Area">
 					<IconUser />
 				</router-link>
 				<router-link :to="{name: 'cart'}" title="Cart">

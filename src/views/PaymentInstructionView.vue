@@ -5,129 +5,44 @@ import { useOrderStore } from "@/stores/order.js"
 import { storeToRefs } from "pinia"
 import { ref } from "vue"
 
+const props = defineProps(['orderId'])
+
+if (props.orderId) {
+    const { fetchPaymentDetails } = useOrderStore()
+    fetchPaymentDetails()
+}
+
 const { paymentDetails } = storeToRefs(useOrderStore())
 let selectedBank = ref('')
 selectedBank.value = paymentDetails.value.bank ?? 'bri'
-
-let invoiceBank = ref('')
-let invoiceBankImg = ref('')
-
-// let isPilihanBankSectionVisible = ref(true)
-
-// function togglePilihanBankSection() {
-// 	isPilihanBankSectionVisible.value = !isPilihanBankSectionVisible.value
-// }
-
-// function selectBank(bank) {
-// 	selectedBank.value = bank
-// }
-
-function setInvoiceBank() {
-	let baseImageUrl = '/src/assets/images'
-
-	switch (selectedBank.value) {
-		case 'bri':
-			invoiceBank.value = 'BRI Virtual Account'
-			invoiceBankImg.value = `${baseImageUrl}/bri.png`
-			break;
-		case 'bni':
-			invoiceBank.value = 'BNI Virtual Account'
-			invoiceBankImg.value = `${baseImageUrl}/bni.png`
-			break;
-		case 'bca':
-			invoiceBank.value = 'BCA Virtual Account'
-			invoiceBankImg.value = `${baseImageUrl}/bca.png`
-			break;
-		case 'mandiri':
-			invoiceBank.value = 'Mandiri Bill Payment'
-			invoiceBankImg.value = `${baseImageUrl}/mandiri.png`
-			break;
-		case 'permata':
-			invoiceBank.value = 'Permata Virtual Account'
-			invoiceBankImg.value = `${baseImageUrl}/permata-bank.png`
-			break;
-	}
-}
-
-setInvoiceBank()
-
 </script>
 
 <template>
 	<main class="grow">
 		<div class="lg:flex lg:flex-row-reverse">
-	        <!-- <div class="lg:basis-1/4 lg:border-l lg:border-l-neutral-300 lg:bg-neutral-200">
-		        <div class="border-b border-b-neutral-300 lg:border-b-0 lg:hidden">
-		            <div id="order-summary-accordion" class="p-4 bg-white flex items-center gap-x-2 md:w-8/12 mx-auto cursor-pointer" @click="togglePilihanBankSection">
-		                <div class="grow-0">
-		                    <IconCreditCard/>
-		                </div>
-		                <div class="flex-1">
-		                    <span>
-		                        Pilihan Bank
-		                    </span>
-		                </div>
-		                <div class="grow-0">
-		                    <IconChevronDown :class="[!isPilihanBankSectionVisible ? 'rotate-180' : '']" />
-		                </div>
-		            </div>
-		        </div>
-		        <div v-show="isPilihanBankSectionVisible" class="bg-neutral-200 border-b border-b-neutral-300 lg:border-b-0">
-		            <div class="p-4 flex flex-col gap-y-2 md:w-8/12 md:mx-auto lg:w-10/12 lg:pt-10">
-		            	<p class="mb-4">Pilih Petunjuk Pembayaran:</p>
-		            	<div class="flex items-center gap-x-4 p-4 border border-neutral-300 bg-white hover:bg-neutral-100 rounded-md cursor-pointer" @click="selectBank('bri')">
-		            		<div class="w-14">
-		            			<img src="../assets/images/bri.png" class="w-full" />
-		            		</div>
-		            		<span class="text-lg">BRI</span>
-		            	</div>
-		            	<div class="flex items-center gap-x-4 p-4 border border-neutral-300 bg-white hover:bg-neutral-100 rounded-md cursor-pointer" @click="selectBank('bni')">
-		            		<div class="w-14">
-		            			<img src="../assets/images/bni.png" class="w-full" />
-		            		</div>
-		            		<span class="text-lg">BNI</span>
-		            	</div>
-		            	<div class="flex items-center gap-x-4 p-4 border border-neutral-300 bg-white hover:bg-neutral-100 rounded-md cursor-pointer" @click="selectBank('bca')">
-		            		<div class="w-14">
-		            			<img src="../assets/images/bca.png" class="w-full" />
-		            		</div>
-		            		<span class="text-lg">BCA</span>
-		            	</div>
-		            	<div class="flex items-center gap-x-4 p-4 border border-neutral-300 bg-white hover:bg-neutral-100 rounded-md cursor-pointer" @click="selectBank('mandiri')">
-		            		<div class="w-14">
-		            			<img src="../assets/images/mandiri.png" class="w-full" />
-		            		</div>
-		            		<span class="text-lg">Mandiri</span>
-		            	</div>
-		            	<div class="flex items-center gap-x-4 p-4 border border-neutral-300 bg-white hover:bg-neutral-100 rounded-md cursor-pointer" @click="selectBank('permata')">
-		            		<div class="w-14">
-		            			<img src="../assets/images/permata-bank.png" class="w-full" />
-		            		</div>
-		            		<span class="text-lg">Permata</span>
-		            	</div>
-		            </div>
-		        </div>
-		    </div> -->
-
 	        <div class="p-4 md:w-8/12 mx-auto">
 	            <div class="pt-4 lg:w-10/12 lg:mx-auto lg:p-10">
 	            	<div class="flex flex-col gap-y-2 pb-4 mb-4 border-b border-b-neutral-300">
 	            		<div class="flex justify-between items-center">
-	            			<span class="font-semibold">{{ invoiceBank }}</span>
+	            			<span class="font-semibold">{{ paymentDetails.payment_method }}</span>
 	            			<div class="w-28 lg:w-32">
-	            				<img :src="invoiceBankImg" class="w-full" />
+	            				<img :src="`../src/assets/images/${paymentDetails.bank}.png`" class="w-full" />
 	            			</div>
 	            		</div>
 	            		<div class="flex justify-between items-center">
-	            			<div>
-	            				<span class="block text-neutral-500">Nomor Virtual Account / Bill Payment</span>
-	            				<span class="font-bold">{{ paymentDetails.va_number ?? `${paymentDetails.bill_key} - Biller Code: ${paymentDetails.biller_code}` }}</span>
+	            			<div v-if="paymentDetails.va_number">
+	            				<span class="block text-neutral-500">Nomor Virtual Account</span>
+	            				<span class="font-bold">{{ paymentDetails.va_number}}</span>
+	            			</div>
+	            			<div v-else>
+	            				<span class="block text-neutral-500">Nomor Bill Key</span>
+	            				<span class="font-bold">{{ `${paymentDetails.bill_key} - Biller Code: ${paymentDetails.biller_code}` }}</span>
 	            			</div>
 	            		</div>
 	            		<div class="flex justify-between items-center">
 	            			<div>
 	            				<span class="block text-neutral-500">Total Pembayaran</span>
-	            				<span class="font-bold">{{ $filters.formatRupiah(parseInt(paymentDetails.gross_amount )) }}</span>
+	            				<span class="font-bold">{{ $filters.formatRupiah(parseInt(paymentDetails.total_payment )) }}</span>
 	            			</div>
 	            		</div>
 	            	</div>
@@ -461,7 +376,7 @@ setInvoiceBank()
                         <div v-if="selectedBank == 'permata'" class="flex flex-col gap-y-4">
                             <div class="flex gap-x-4 items-center">
                             	<div class="w-28">
-                            		<img src="../assets/images/permata-bank.png" class="w-full" />
+                            		<img src="../assets/images/permata.png" class="w-full" />
                             	</div>
                                 <p class="text-lg">Permata Virtual Account</p>
                             </div>

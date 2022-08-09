@@ -11,12 +11,6 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/product/:id',
-      name: 'product',
-      props: true,
-      component: () => import('../views/ProductView.vue')
-    },
-    {
       path: '/cart',
       name: 'cart',
       component: () => import('../views/CartView.vue')
@@ -27,24 +21,9 @@ const router = createRouter({
       component: () => import('../views/CheckoutView.vue')
     },
     {
-      path: '/payment',
-      name: 'payment',
-      component: () => import('../views/PaymentView.vue')
-    },
-    {
-      path: '/payment-instruction',
-      name: 'payment-instruction',
-      component: () => import('../views/PaymentInstructionView.vue')
-    },
-    {
-      path: '/shipping',
-      name: 'shipping',
-      component: () => import('../views/ShippingView.vue')
-    },
-    {
-      path: '/register',
-      name: 'register',
-      component: () => import('../views/Auth/RegisterView.vue')
+      path: '/forgot-password',
+      name: 'forgot-password',
+      component: () => import('../views/Auth/ForgotPasswordView.vue')
     },
     {
       path: '/login',
@@ -52,9 +31,40 @@ const router = createRouter({
       component: () => import('../views/Auth/LoginView.vue')
     },
     {
-      path: '/forgot-password',
-      name: 'forgot-password',
-      component: () => import('../views/Auth/ForgotPasswordView.vue')
+      path: '/orders',
+      name: 'orders',
+      component: () => import('../views/OrderHistoryView.vue')
+    },
+    {
+      path: '/order-detail',
+      name: 'order-detail',
+      component: () => import('../views/OrderDetailView.vue')
+    },
+    {
+      path: '/payment',
+      name: 'payment',
+      component: () => import('../views/PaymentView.vue')
+    },
+    {
+      path: '/payment-instruction/:orderId?',
+      name: 'payment-instruction',
+      component: () => import('../views/PaymentInstructionView.vue')
+    },
+    {
+      path: '/product/:id',
+      name: 'product',
+      props: true,
+      component: () => import('../views/ProductView.vue')
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('../views/Auth/RegisterView.vue')
+    },
+    {
+      path: '/shipping',
+      name: 'shipping',
+      component: () => import('../views/ShippingView.vue')
     },
     // {
     //   path: "/forbidden",
