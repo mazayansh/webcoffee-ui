@@ -14,6 +14,9 @@ export const useIndexStore = defineStore({
     togglePageLoading() {
       this.pageLoading = !this.pageLoading
     },
+    hidePageLoading() {
+      this.pageLoading = false
+    },
     toggleOverlay() {
       this.isOverlayVisible = !this.isOverlayVisible
     },

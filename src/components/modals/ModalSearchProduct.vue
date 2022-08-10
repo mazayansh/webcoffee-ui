@@ -1,9 +1,25 @@
 <script setup>
 import IconCross from '@/components/icons/IconCross.vue'
 import IconSearch from '@/components/icons/IconSearch.vue'
-import { useIndexStore } from '@/stores/index.js'
 
-const { toggleSearchModal } = useIndexStore()
+import { useIndexStore } from '@/stores/index.js'
+const { toggleSearchModal, togglePageLoading } = useIndexStore()
+
+import { useProductStore } from '@/stores/product.js'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const { fetchProductList } = useProductStore()
+let searchKeyword = ref('')
+
+function searchProduct() {
+	toggleSearchModal()
+	togglePageLoading()
+	fetchProductList(1,'-created_at',null,searchKeyword.value)
+		.then(() => {
+			router.push({ name: 'search-result' })
+		})
+}
 </script>
 
 <template>
@@ -17,9 +33,9 @@ const { toggleSearchModal } = useIndexStore()
 			</button>
 		</div>
 		<div class="p-6">
-			<form action="#" class="p-2 border border-gray-300 rounded-sm flex items-center gap-x-4">
+			<form @submit.prevent="searchProduct" action="#" class="p-2 border border-gray-300 rounded-sm flex items-center gap-x-4">
 				<div class="flex-1">
-					<input type="text" placeholder="Search..." class="focus:outline-0 w-full" autofocus>
+					<input type="text" v-model="searchKeyword" placeholder="Search..." class="focus:outline-0 w-full" autofocus>
 				</div>
 				<button type="submit">
 					<IconSearch />

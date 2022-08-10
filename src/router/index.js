@@ -110,6 +110,14 @@ const router = createRouter({
       }
     },
     {
+      path: '/search',
+      name: 'search-result',
+      component: () => import('../views/SearchResultView.vue'),
+      meta: {
+        title: "Search Results"
+      }
+    },
+    {
       path: "/forbidden",
       name: "forbidden",
       component: () => import(/* webpackChunkName "forbidden" */ '../views/Errors/Forbidden.vue'),
@@ -162,8 +170,8 @@ router.beforeEach((toRoute, fromRoute, next) => {
 })
 
 router.afterEach((toRoute, fromRoute) => {
-  const { togglePageLoading } = useIndexStore()
-  togglePageLoading()
+  const { hidePageLoading } = useIndexStore()
+  hidePageLoading()
   window.document.title = toRoute.meta && toRoute.meta.title ? toRoute.meta.title : 'KopiSlur.id'
 })
 

@@ -4,6 +4,7 @@ import { defineStore } from 'pinia'
 export const useProductStore = defineStore({
   id: 'product',
   state: () => ({
+    searchKeyword: '',
     products: [],
     meta: {},
     product: {
@@ -37,12 +38,13 @@ export const useProductStore = defineStore({
     ]
   }),
   actions: {
-    fetchProductList(page,sort="-created_at",filter=null) {
-      productApi.index(page,sort,filter)
-        .then(response => {
-          this.products = response.data.data
-          this.meta = response.data.meta
-        })
+    fetchProductList(page,sort="-created_at",filter=null,search=null) {
+      return productApi.index(page,sort,filter,search)
+              .then(response => {
+                this.products = response.data.data
+                this.meta = response.data.meta
+                this.searchKeyword = search
+              })
     },
     fetchProductById(id) {
       productApi.getById(id)

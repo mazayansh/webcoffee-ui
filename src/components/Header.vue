@@ -56,9 +56,9 @@ function logout() {
 						</router-link>
 					</div>
 				</nav>
-				<!-- <button title="Search" @click="toggleSearchModal">
+				<button title="Search" @click="toggleSearchModal">
 					<IconSearch />
-				</button> -->
+				</button>
 				<router-link :to="{name: 'cart'}" title="Cart">
 					<IconShopBag />
 				</router-link>
