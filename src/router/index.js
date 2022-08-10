@@ -79,7 +79,6 @@ const router = createRouter({
       props: true,
       component: () => import('../views/PaymentInstructionView.vue'),
       meta: {
-        requiresAuth: true,
         title: "Payment Instruction"
       }
     },
