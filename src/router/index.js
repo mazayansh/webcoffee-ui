@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// import { authCheck, guestCheck } from "../middleware/auth.js"
+import { authCheck, guestCheck } from "@/middlewares/auth.js"
 import HomeView from '@/views/HomeView.vue'
 
 const router = createRouter({
@@ -8,96 +8,138 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: HomeView,
+      meta: {
+        title: "Shop"
+      }
     },
     {
       path: '/cart',
       name: 'cart',
-      component: () => import('../views/CartView.vue')
+      component: () => import('../views/CartView.vue'),
+      meta: {
+        title: "Cart"
+      }
     },
     {
       path: '/checkout',
       name: 'checkout',
-      component: () => import('../views/CheckoutView.vue')
+      component: () => import('../views/CheckoutView.vue'),
+      meta: {
+        title: "Infomation"
+      }
     },
-    {
-      path: '/forgot-password',
-      name: 'forgot-password',
-      component: () => import('../views/Auth/ForgotPasswordView.vue')
-    },
+    // {
+    //   path: '/forgot-password',
+    //   name: 'forgot-password',
+    //   component: () => import('../views/Auth/ForgotPasswordView.vue'),
+    //   meta: {
+    //       title: "Forgot Password"
+    //   }
+    // },
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/Auth/LoginView.vue')
+      component: () => import('../views/Auth/LoginView.vue'),
+      meta: {
+        guestOnly: true,
+        title: "Login"
+      }
     },
     {
       path: '/orders',
       name: 'orders',
-      component: () => import('../views/OrderHistoryView.vue')
+      component: () => import('../views/OrderHistoryView.vue'),
+      meta: {
+        requiresAuth: true,
+        title: "My Order History"
+      }
     },
     {
       path: '/order-detail',
       name: 'order-detail',
-      component: () => import('../views/OrderDetailView.vue')
+      component: () => import('../views/OrderDetailView.vue'),
+      meta: {
+        requiresAuth: true,
+        title: "Order Detail"
+      }
     },
     {
       path: '/payment',
       name: 'payment',
-      component: () => import('../views/PaymentView.vue')
+      component: () => import('../views/PaymentView.vue'),
+      meta: {
+        title: "Payment"
+      }
     },
     {
       path: '/payment-instruction/:orderId?',
       name: 'payment-instruction',
-      component: () => import('../views/PaymentInstructionView.vue')
+      props: true,
+      component: () => import('../views/PaymentInstructionView.vue'),
+      meta: {
+        requiresAuth: true,
+        title: "Payment Instruction"
+      }
     },
     {
       path: '/product/:id',
       name: 'product',
       props: true,
-      component: () => import('../views/ProductView.vue')
+      component: () => import('../views/ProductView.vue'),
+      meta: {
+        title: "Our Product"
+      }
     },
     {
       path: '/register',
       name: 'register',
-      component: () => import('../views/Auth/RegisterView.vue')
+      component: () => import('../views/Auth/RegisterView.vue'),
+      meta: {
+        guestOnly: true,
+        title: "Register"
+      }
     },
     {
       path: '/shipping',
       name: 'shipping',
-      component: () => import('../views/ShippingView.vue')
+      component: () => import('../views/ShippingView.vue'),
+      meta: {
+        title: "Shipping"
+      }
     },
-    // {
-    //   path: "/forbidden",
-    //   name: "Forbidden",
-    //   component: () => import(/* webpackChunkName "forbidden" */ '../pages/errors/Forbidden.vue'),
-    //   meta: {
-    //       title: "Forbidden"
-    //   }
-    // },
-    // {
-    //     path: "/:catchAll(.*)",
-    //     name: "NotFound",
-    //     component: () => import(/* webpackChunkName "notfound" */ '../pages/errors/NotFound.vue'),
-    //     meta: {
-    //         title: "Not Found"
-    //     }
-    // },
-    // {
-    //     path: "/404/",
-    //     name: "404Resource",
-    //     component: () => import(/* webpackChunkName "notfoundresource" */ '../pages/errors/NotFound.vue'),
-    //     meta: {
-    //         title: "404 Not Found"
-    //     }
-    // },
-    // {
-    //     path: "/network-error",
-    //     name: "NetworkError",
-    //     component: () => import(/* webpackChunkName "networkerror" */ '../pages/errors/NetworkError.vue'),
-    //     meta: {
-    //         title: "Network Failure"
-    //     }
-    // }
+    {
+      path: "/forbidden",
+      name: "forbidden",
+      component: () => import(/* webpackChunkName "forbidden" */ '../views/Errors/Forbidden.vue'),
+      meta: {
+        title: "Forbidden"
+      }
+    },
+    {
+        path: "/:catchAll(.*)",
+        name: "not-found",
+        component: () => import(/* webpackChunkName "notfound" */ '../views/Errors/NotFound.vue'),
+        meta: {
+          title: "Not Found"
+        }
+    },
+    {
+        path: "/404/",
+        name: "404resource",
+        component: () => import(/* webpackChunkName "notfoundresource" */ '../views/Errors/NotFound.vue'),
+        meta: {
+          title: "404 Not Found"
+        }
+    },
+    {
+        path: "/general-error",
+        name: "general-error",
+        component: () => import(/* webpackChunkName "networkerror" */ '../views/Errors/GeneralError.vue'),
+        meta: {
+          title: "Network/Server Failure"
+        }
+    }
   ],
   scrollBehavior(to, from, savedPosition) {
     // always scroll to top
@@ -105,18 +147,18 @@ const router = createRouter({
   },
 })
 
-// router.beforeEach((toRoute, fromRoute, next) => {
-//     if(toRoute.matched.some(record => record.meta.requiresAuth)) {
-//         authCheck(next, toRoute.meta.roles)
-//     } else if(toRoute.matched.some(record => record.meta.guestOnly)) {
-//         guestCheck(next)
-//     } else {
-//         next()
-//     }
-// })
+router.beforeEach((toRoute, fromRoute, next) => {
+    if(toRoute.matched.some(record => record.meta.requiresAuth)) {
+        authCheck(next)
+    } else if(toRoute.matched.some(record => record.meta.guestOnly)) {
+        guestCheck(next)
+    } else {
+        next()
+    }
+})
 
-// router.afterEach((toRoute, fromRoute) => {
-//   window.document.title = toRoute.meta && toRoute.meta.title ? toRoute.meta.title : 'Dashboard'
-// })
+router.afterEach((toRoute, fromRoute) => {
+  window.document.title = toRoute.meta && toRoute.meta.title ? toRoute.meta.title : 'KopiSlur.id'
+})
 
 export default router

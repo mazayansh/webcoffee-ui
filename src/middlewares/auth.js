@@ -1,44 +1,35 @@
-// import User from "../services/user.js"
-// import store from "../store/index.js"
+import userApi from "@/services/user.js"
+import { useUserStore } from "@/stores/user.js"
+// import { useRouter } from "vue-router"
 
-// const authCheck = (next, roles = null) => {
-//     User.auth()
-//         .then(response => {
-//             if(Object.keys(store.user).length === 0) {
-//                 store.user = response.data;
-//             }
+// const router = useRouter()
 
-//             if (roles != null) {
-//                 if (roles.includes(response.data.role_label)) {
-//                     return next();
-//                 }
-//                 else {
-//                     return next({
-//                         path: '/forbidden'
-//                     });
-//                 }
-//             }
-//             else {
-//                 return next();
-//             }
-//         })
-//         .catch(() => {
-//             return next({
-//                 name: "Login"
-//             });
-//         });
-// }
+const authCheck = (next) => {
+    userApi.profile()
+        .then(response => {
+            if(Object.keys(useUserStore().user).length === 0) {
+                useUserStore().user = response.data;
+            }
 
-// const guestCheck = (next) => {
-//     User.auth()
-//         .then(response => {
-//             return next({
-//                 name: "Dashboard"
-//             });
-//         })
-//         .catch(() => {
-//             return next();
-//         });
-// }
+            return next();
+        })
+        .catch(() => {
+            return next({
+                name: "login"
+            });
+        });
+}
 
-// export { authCheck, guestCheck }
+const guestCheck = (next) => {
+    userApi.profile()
+        .then(response => {
+            return next({
+                name: "home"
+            });
+        })
+        .catch(() => {
+            return next();
+        });
+}
+
+export { authCheck, guestCheck }
