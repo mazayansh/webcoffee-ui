@@ -2,8 +2,9 @@
 import IconShopBagSolid from "@/components/icons/IconShopBagSolid.vue"
 import IconHamburgerMenu from "@/components/icons/IconHamburgerMenu.vue"
 import UserMenu from "@/components/navs/UserMenu.vue"
+import { ref, computed } from "vue"
+import orderApi from "@/services/order.js"
 
-import { ref } from "vue"
 let isUserMenuVisible = ref(false)
 function showUserMenu() {
     isUserMenuVisible.value = true
@@ -11,6 +12,13 @@ function showUserMenu() {
 function hideUserMenu() {
     isUserMenuVisible.value = false
 }
+
+const orders = ref([])
+
+orderApi.getUserOrderHistory()
+    .then(response => {
+        orders.value = response.data.data
+    })
 </script>
 
 <template>
@@ -31,34 +39,39 @@ function hideUserMenu() {
                     <h1 class="text-lg font-bold">Riwayat Pesanan</h1>
                     
                     <!-- start order box -->
-                    <div class="pt-6">
-                        <div class="border border-neutral-200 px-4 rounded-md shadow-md">
-                            <div class="py-2 border-b border-b-neutral-200 flex items-center gap-x-4">
+                    <div class="pt-6 flex flex-col gap-y-6">
+                        <div v-for="order,index in orders" :key="index" class="border border-neutral-200 px-4 rounded-md shadow-md">
+                            <div class="py-4 border-b border-b-neutral-200 flex items-center gap-x-4">
                                 <IconShopBagSolid :class="'text-purple-900 lg:h-7 lg:w-7'" />
-                                <p class="grow ">5 Agustus 2022</p>
+                                <p class="grow ">{{ order.order_date }} WIB</p>
                                 <div class="rounded-md py-1 px-2 bg-green-100">
-                                    <span class="font-semibold text-green-600">Selesai</span>
+                                    <span class="font-semibold text-green-600">{{ order.order_status }}</span>
                                 </div>
                             </div>
-                            <div class="py-2">
+                            <div class="py-4">
                                 <div class="flex gap-x-4">
                                     <div class="w-14">
-                                        <img src="../assets/images/mocha-java-coffee-1lb-whole-bean_1512x.webp" class="rounded-md">
+                                        <img :src="order.first_order_item.product_featured_image_url" class="rounded-md">
                                     </div>
                                     <div class="grow">
-                                        <a href="#" class="block font-semibold text-purple-900">Mocha Java Coffee 1lb Whole Bean</a>
-                                        <span>1 barang</span>
+                                        <router-link :to="{ name: 'order-detail', params: { id: order.order_id } }" class="block font-semibold text-purple-900">{{ order.first_order_item.product_name }}</router-link>
+                                        <span>{{ order.first_order_item.product_quantity }} barang</span>
                                     </div>
                                 </div>
-                                <div class="flex justify-between mt-4">
+                                <div class="flex justify-between items-end mt-4 pb-2">
                                     <div>
-                                        <span class="block text-sm text-neutral-400">Total Belanja</span>
-                                        <span class="block font-semibold">Rp 137.500</span>
+                                        <div v-if="parseInt(order.other_order_items_quantity) > 0" class="mb-2">
+                                            <span>+{{ order.other_order_items_quantity }} barang lainnya</span>
+                                        </div>
+                                        <div>
+                                            <span class="block text-sm text-neutral-400">Total Belanja</span>
+                                            <span class="block font-semibold">{{ $filters.formatRupiah(parseInt(order.total_price)) }}</span>
+                                        </div>
                                     </div>
                                     <div>
-                                        <button class="py-2 px-4 rounded-md bg-purple-900 text-white font-semibold">
+                                        <router-link :to="{ name: 'order-detail', params: { id: order.order_id } }" class="py-2 px-4 rounded-md bg-purple-900 text-white font-semibold">
                                             Lihat detail
-                                        </button>
+                                        </router-link>
                                     </div>
                                 </div>
                             </div>

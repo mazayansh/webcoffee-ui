@@ -9,7 +9,7 @@ const props = defineProps(['orderId'])
 
 if (props.orderId) {
     const { fetchPaymentDetails } = useOrderStore()
-    fetchPaymentDetails()
+    fetchPaymentDetails(props.orderId)
 }
 
 const { paymentDetails } = storeToRefs(useOrderStore())
@@ -25,7 +25,7 @@ selectedBank.value = paymentDetails.value.bank ?? 'bri'
 	            	<div class="flex flex-col gap-y-2 pb-4 mb-4 border-b border-b-neutral-300">
 	            		<div class="flex justify-between items-center">
 	            			<span class="font-semibold">{{ paymentDetails.payment_method }}</span>
-	            			<div class="w-28 lg:w-32">
+	            			<div v-if="paymentDetails.bank" class="w-28 lg:w-32">
 	            				<img :src="`../src/assets/images/${paymentDetails.bank}.png`" class="w-full" />
 	            			</div>
 	            		</div>
@@ -42,7 +42,7 @@ selectedBank.value = paymentDetails.value.bank ?? 'bri'
 	            		<div class="flex justify-between items-center">
 	            			<div>
 	            				<span class="block text-neutral-500">Total Pembayaran</span>
-	            				<span class="font-bold">{{ $filters.formatRupiah(parseInt(paymentDetails.total_payment )) }}</span>
+	            				<span class="font-bold">{{ $filters.formatRupiah(parseInt(paymentDetails.total_payment)) }}</span>
 	            			</div>
 	            		</div>
 	            	</div>

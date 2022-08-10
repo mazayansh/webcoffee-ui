@@ -4,7 +4,13 @@ export default {
 	createOrder(form) {
         return api.post("/orders", form)
     },
+    getUserOrderHistory() {
+        return api.get("/orders")
+    },
+    getOrderDetail(orderId) {
+        return api.get(`/orders/${orderId}`)
+    },
     getOrderPayment(orderId) {
-        return api.post(`/orders/${orderId}/payment`)
+        return api.get(`/orders/${orderId}/payment`)
     }
 }

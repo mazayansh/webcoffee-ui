@@ -56,8 +56,9 @@ const router = createRouter({
       }
     },
     {
-      path: '/order-detail',
+      path: '/orders/:id',
       name: 'order-detail',
+      props: true,
       component: () => import('../views/OrderDetailView.vue'),
       meta: {
         requiresAuth: true,

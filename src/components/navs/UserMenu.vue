@@ -1,9 +1,13 @@
 <script setup>
 import IconClipboardList from "@/components/icons/IconClipboardList.vue"
 import { toRefs } from "vue"
+import { useUserStore } from "@/stores/user.js"
+import { storeToRefs } from "pinia"
 
 const props = defineProps(['isUserMenuVisible'])
 let { isUserMenuVisible } = toRefs(props)
+
+const { user } = storeToRefs(useUserStore())
 </script>
 
 <template>
@@ -16,7 +20,7 @@ let { isUserMenuVisible } = toRefs(props)
                         <img src="../../assets/images/user.png" class="w-full rounded-full">
                     </div>
                     <div class="text-center">
-                        <span class="font-semibold">Imam Setiawan</span>
+                        <span class="font-semibold">{{ `${user.customer.first_name} ${user.customer.last_name}` }}</span>
                     </div>
                 </div>
                 <div class="border-b border-b-neutral-300">

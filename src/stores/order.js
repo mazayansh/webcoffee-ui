@@ -7,9 +7,9 @@ export const useOrderStore = defineStore({
     paymentDetails: {}
   }),
   actions: {
-    fetchPaymentDetails() {
+    fetchPaymentDetails(orderId) {
       console.log('fetch payment details start')
-      orderApi.getOrderPayment()
+      orderApi.getOrderPayment(orderId)
         .then(response => {
           console.log('fetch payment details success')
           this.paymentDetails = response.data.data
