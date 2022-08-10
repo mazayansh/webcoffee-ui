@@ -11,7 +11,7 @@ const apiClient = axios.create({
 })
 
 apiClient.interceptors.request.use(config => {
-    config.headers.Authorization = `Bearer ${useUserStore().user.access_token}`
+    config.headers.Authorization = `Bearer ${useUserStore().access_token}`
     return config
 })
 

@@ -13,7 +13,7 @@ export default {
     logout() {
         return api.post("/auth/logout");
     },
-    profile() {
-        return api.get("/user-profile");
-    },
+    // profile() {
+    //     return api.get("/user-profile");
+    // },
 }

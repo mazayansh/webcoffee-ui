@@ -7,18 +7,32 @@ import IconPlusSign from '@/components/icons/IconPlusSign.vue'
 import IconMinusSign from '@/components/icons/IconMinusSign.vue'
 import IconSearch from '@/components/icons/IconSearch.vue'
 import IconUser from '@/components/icons/IconUser.vue'
+import IconUserCircle from '@/components/icons/IconUserCircle.vue'
 import IconShopBag from '@/components/icons/IconShopBag.vue'
 import IconLogout from '@/components/icons/IconLogout.vue'
 import ModalSearchProduct from '@/components/modals/ModalSearchProduct.vue'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useIndexStore } from '@/stores/index.js'
+import { useUserStore } from '@/stores/user.js'
+import userApi from '@/services/user.js'
+
+const { user } = storeToRefs(useUserStore())
 
 const { toggleMobileMenu, toggleSearchModal} = useIndexStore()
 let { isMobileMenuVisible, isModalSearchProductVisible } = storeToRefs(useIndexStore())
 
+const router = useRouter()
+
 function logout() {
-	console.log("logout")
+	userApi.logout()
+		.then(response => {
+			useUserStore().user = null
+			useUserStore().access_token = null
+
+			router.push({ name: 'home' })
+		})
 }
 </script>
 
@@ -80,16 +94,16 @@ function logout() {
 				<button title="Search" @click="toggleSearchModal">
 					<IconSearch />
 				</button>
-				<router-link :to="{ name: 'login' }" title="Login" :class="'hidden'">
-					<IconUser />
-				</router-link>
-				<router-link :to="{ name: 'orders' }" title="Member Area">
-					<IconUser />
-				</router-link>
 				<router-link :to="{name: 'cart'}" title="Cart">
 					<IconShopBag />
 				</router-link>
-				<button @click="logout" class="text-neutral-300">
+				<router-link v-show="user" :to="{ name: 'orders' }" title="Member Area" :class="'text-neutral-300'">
+					<IconUserCircle />
+				</router-link>
+				<router-link v-show="!user" :to="{ name: 'login' }" title="Login">
+					<IconUser />
+				</router-link>
+				<button v-show="user" @click="logout" class="text-neutral-300">
 					<IconLogout />
 				</button>
 			</div>
