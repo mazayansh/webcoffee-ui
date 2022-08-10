@@ -4,6 +4,9 @@ import { ref } from "vue"
 import { useRouter } from "vue-router"
 import userApi from "@/services/user.js"
 
+import { useIndexStore } from "@/stores/index.js"
+const { togglePageLoading } = useIndexStore()
+
 let form = ref({
 	first_name: '',
     last_name: '',
@@ -15,11 +18,23 @@ let form = ref({
 const errors = ref({})
 
 const router = useRouter()
+let registerResult = ref('')
 
 function register() {
+    togglePageLoading()
     userApi.register(form.value)
         .then(response => {
-            router.push({ name: 'login' })
+            togglePageLoading()
+            registerResult.value = 'Registrasi berhasil. Anda akan segera diarahkan ke halaman login.'
+            setTimeout(() => {
+                router.push({ name: 'login' })
+            }, 3000)
+        })
+        .catch(error => {
+            togglePageLoading()
+            if(error.response.status == 422) {
+                errors.value = error.response.data.errors
+            }
         })
 }
 </script>
@@ -31,6 +46,9 @@ function register() {
                 <h2 class="text-2xl font-bold uppercase tracking-widest">create account</h2>
             </div>
             <form action="#" class="py-10 flex flex-col gap-y-4" @submit.prevent="register">
+                <div v-if="registerResult" class="text-green-600 text-center">
+                    {{ registerResult }}
+                </div>
                 <div class="flex flex-col gap-y-4 md:flex-row md:gap-x-4 md:justify-between">
                     <div class="flex flex-col gap-y-2 md:flex-1">
                         <BaseInput :label="'First name'" :name="'first_name'" v-model="form.first_name" type="text" required="required" aria-required="true" :error="errors.first_name ? errors.first_name[0] : null">

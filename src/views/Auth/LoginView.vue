@@ -5,6 +5,9 @@ import { useRouter } from "vue-router"
 import userApi from "@/services/user.js"
 import { useUserStore } from "@/stores/user.js"
 
+import { useIndexStore } from "@/stores/index.js"
+const { togglePageLoading } = useIndexStore()
+
 const form = ref({
     email: '',
     password: ''
@@ -15,11 +18,23 @@ const errors = ref({})
 const router = useRouter()
 
 function login() {
+    togglePageLoading()
     userApi.login(form.value)
         .then(async response => {
+            togglePageLoading()
             useUserStore().user = await response.data.user
             useUserStore().access_token = await response.data.access_token
             router.push({ name: 'orders' })
+        })
+        .catch(error => {
+            togglePageLoading()
+            if(error.response.status == 422) {
+                errors.value = error.response.data.errors
+            } else if(error.response.status == 404) {
+                errors.value.credentials = error.response.data.error
+            } else if(error.response.status == 401) {
+                errors.value.credentials = error.response.data.error
+            }
         })
 }
 </script>
@@ -30,6 +45,9 @@ function login() {
             <h2 class="text-2xl font-bold uppercase tracking-widest">login</h2>
         </div>
         <form action="#" class="py-10 flex flex-col gap-y-4" @submit.prevent="login">
+            <div v-if="errors.credentials" class="text-red-600 text-center">
+                {{ errors.credentials }}
+            </div>
             <div class="flex flex-col gap-y-2">
                 <BaseInput :label="'Email'" :name="'email'" :type="'text'" required="required" aria-required="true" v-model="form.email" :error="errors.email ? errors.email[0] : null">
                     <template #requiredMark>
