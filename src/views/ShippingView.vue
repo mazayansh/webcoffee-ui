@@ -2,11 +2,15 @@
 import Breadcumb from "@/components/navs/Breadcumb.vue"
 import IconChevronRight from "@/components/icons/IconChevronRight.vue"
 import CheckoutSummarySection from "@/components/CheckoutSummarySection.vue"
+import Spinner from "@/components/misc/Spinner.vue"
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { storeToRefs } from "pinia"
 import { useCartStore } from "@/stores/cart.js"
+import { useIndexStore } from "@/stores/index.js"
 import cartApi from "@/services/cart.js"
+
+const { togglePageLoading } = useIndexStore()
 
 const { fetchCartItemList, fetchShippingInfo } = useCartStore()
 const { cartItems, shippingInformation } = storeToRefs(useCartStore())
@@ -20,16 +24,20 @@ const shippingMethodForm = ref({
 const shippingMethods = ref([])
 const errors = ref({})
 
+let shippingMethodsLoading = ref(true)
 cartApi.getShippingMethod()
     .then(response => {
+        shippingMethodsLoading.value = false
         shippingMethods.value = response.data.data
     })
 
 const router = useRouter()
 
 function submitSelectedShippingMethod() {
+    togglePageLoading()
     cartApi.submitSelectedShippingMethod(shippingMethodForm.value)
         .then(response => {
+            togglePageLoading()
             router.push({ name: 'payment' })
         })
         .catch(error => {
@@ -95,7 +103,10 @@ const breadcumbItems = [
                             <div>
                                 <legend class="text-lg">Shipping method</legend>
                             </div>
-                            <div class="px-4 border border-neutral-300 rounded-md">
+                            <div v-show="shippingMethodsLoading" class="text-center pt-6">
+                                <Spinner />
+                            </div>
+                            <div v-show="!shippingMethodsLoading" class="px-4 border border-neutral-300 rounded-md">
                                 <div v-for="shippingMethod,index in shippingMethods" :key="index" class="table py-4 border-b border-b-neutral-300">
                                     <div class="table-cell pr-3 whitespace-nowrap">
                                         <input 

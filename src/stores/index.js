@@ -7,9 +7,13 @@ export const useIndexStore = defineStore({
     isMobileMenuVisible: false,
     isModalSearchProductVisible: false,
     isMobileFilterProductSidebarVisible: false,
-    isModalConfirmRemoveCartItemVisible: false
+    isModalConfirmRemoveCartItemVisible: false,
+    pageLoading: false
   }),
   actions: {
+    togglePageLoading() {
+      this.pageLoading = !this.pageLoading
+    },
     toggleOverlay() {
       this.isOverlayVisible = !this.isOverlayVisible
     },

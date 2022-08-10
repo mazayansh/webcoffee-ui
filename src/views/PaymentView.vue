@@ -12,6 +12,9 @@ import { useCartStore } from "@/stores/cart.js"
 import orderApi from "@/services/order.js"
 import { useOrderStore } from "@/stores/order.js"
 
+import { useIndexStore } from "@/stores/index.js"
+const { togglePageLoading } = useIndexStore()
+
 const { fetchCartItemList, fetchShippingInfo } = useCartStore()
 const { cartItems, shippingInformation } = storeToRefs(useCartStore())
 
@@ -25,8 +28,10 @@ const billingForm = ref({
 
 const router = useRouter()
 function submitBillingInfo() {
+	togglePageLoading()
 	orderApi.createOrder(billingForm.value)
 		.then(response => {
+			togglePageLoading()
 			useOrderStore().paymentDetails = response.data.data
 			router.push({name: 'payment-instruction'})
 		})
@@ -177,23 +182,6 @@ const paymentMethods = [
 	                                            <FloatLabelInput :label="'Phone (optional)'" type="text" :name="'phone'" v-model="billingForm.phone" />
 	                                        </div>
 	                                    </div>
-	                                </div>
-	                            </div>
-	                        </div>
-	                        <div>
-	                            <div class="pb-4">
-	                                <legend class="text-lg">Remember me</legend>
-	                            </div>
-	                            <div class="px-4 border border-neutral-300 rounded-md">
-	                                <div class="table py-4 border-b border-b-neutral-300">
-	                                    <div class="table-cell pr-3 whitespace-nowrap">
-	                                        <input id="remember-me" type="checkbox" name="remember_me" class="cursor-pointer">
-	                                    </div>
-	                                    <label for="remember-me" class="table-cell w-full cursor-pointer">
-	                                        <span class="table-cell w-full font-semibold">
-	                                            Save my information for a faster checkout
-	                                        </span>
-	                                    </label>
 	                                </div>
 	                            </div>
 	                        </div>

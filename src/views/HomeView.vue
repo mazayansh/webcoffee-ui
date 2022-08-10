@@ -4,6 +4,7 @@ import FilterProductSidebarMobile from '@/components/FilterProductSidebarMobile.
 import BaseSelect from '@/components/forms/BaseSelect.vue'
 import ProductGridItem from '@/components/ProductGridItem.vue'
 import Pagination from '@/components/Pagination.vue'
+import Spinner from '@/components/misc/Spinner.vue'
 import { ref, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoastStore } from '@/stores/roast.js'
@@ -73,6 +74,9 @@ let resetFilterActiveStatus = ref(false)
 					</div>
 					<div class="grid grid-cols-2 md:grid-cols-3 gap-4 py-6">
 						<ProductGridItem v-for="product in products" :key="product.id" :product="product" />
+					</div>
+					<div v-show="products.length == 0" class="text-center pt-12">
+						<Spinner />
 					</div>
 				</div>
 			</div>

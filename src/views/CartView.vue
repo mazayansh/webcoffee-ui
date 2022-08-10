@@ -1,15 +1,23 @@
 <script setup>
 import CartRowItem from "@/components/CartRowItem.vue"
 import IconChevronRight from "@/components/icons/IconChevronRight.vue"
+import Spinner from "@/components/misc/Spinner.vue"
 import { useCartStore } from "@/stores/cart.js"
 import cartApi from "@/services/cart.js"
 import { storeToRefs } from "pinia"
-import { computed } from "vue"
+import { ref, computed } from "vue"
+
+import { useIndexStore } from "@/stores/index.js"
+const { togglePageLoading } = useIndexStore()
 
 const { fetchCartItemList }  = useCartStore()
 const { cartItems } = storeToRefs(useCartStore())
 
+let cartLoading = ref(true)
 fetchCartItemList()
+    .then(() => {
+        cartLoading.value = false
+    })
 
 let isCartEmpty = computed(() => {
     return cartItems.value.length < 1
@@ -26,8 +34,10 @@ function updateCartItem(cartItem) {
 }
 
 function removeCartItem(cartItemId) {
+    togglePageLoading()
     cartApi.removeCartItem(cartItemId)
         .then(response => {
+            togglePageLoading()
             cartItems.value = cartItems.value.filter((cartItem) => {
                 return cartItem.id != cartItemId
             })
@@ -41,7 +51,10 @@ function removeCartItem(cartItemId) {
             <div>
                 <h1 class="text-xl font-semibold uppercase text-center">shopping cart</h1>
             </div>
-            <div>
+            <div v-show="cartLoading" class="text-center pt-12">
+                <Spinner />
+            </div>
+            <div v-show="!cartLoading">
                 <div class="pt-10">
                     <div class="hidden md:flex md:justify-between md:items-center md:gap-y-4 py-4 border-b border-b-neutral-300">
                         <div class="capitalize basis-2/3">

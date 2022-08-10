@@ -1,4 +1,5 @@
 <script setup>
+import IconCross from "@/components/icons/IconCross.vue"
 import { watch, toRefs } from 'vue'
 import { useProductStore } from '@/stores/product.js'
 
@@ -59,15 +60,19 @@ watch(resetFilterActiveStatus, (newResetFilterActiveStatus) => {
         <h3 class="uppercase font-bold text-lg">{{ filterGroup.title }}</h3>
         <ul class="py-4 flex flex-wrap gap-2">
             <li v-for="filterItem in filterGroup.items" :key="filterItem.id">
-                <button @click="toggleFilter(filterGroup.id, filterItem)" :class="[filterItem.isActive ? 'bg-neutral-200' : 'bg-white','px-4 py-1 block border border-neutral-300 hover:bg-neutral-200']">
+                <button @click="toggleFilter(filterGroup.id, filterItem)" :class="[filterItem.isActive ? 'bg-neutral-200' : 'bg-white','px-4 py-1 block border border-neutral-300 hover:bg-neutral-200', 'flex items-center justify-center']">
                     {{ filterItem.name }}
-                    <span class="text-neutral-400 ml-2" v-if="filterItem.isActive">&#10060;</span>
+                    <span class="text-neutral-400 ml-2 inline-block" v-if="filterItem.isActive">
+                        <IconCross :class="'h-4 w-4 text-neutral-500'" />
+                    </span>
                 </button>
             </li>
         </ul>
     </div>
-    <button class="bg-neutral-200 py-2 px-4 hover:bg-neutral-300" @click="resetFilterProduct">
+    <button class="bg-neutral-200 py-2 px-4 hover:bg-neutral-300 flex items-center justify-center" @click="resetFilterProduct">
         CLEAR FILTERS
-        <span class="text-neutral-400 ml-2">&#10060;</span>
+        <span class="text-neutral-400 ml-2 inline-block">
+            <IconCross :class="'h-4 w-4 text-neutral-500'" />
+        </span>
     </button>
 </template>

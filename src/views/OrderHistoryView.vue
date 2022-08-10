@@ -2,6 +2,7 @@
 import IconShopBagSolid from "@/components/icons/IconShopBagSolid.vue"
 import IconHamburgerMenu from "@/components/icons/IconHamburgerMenu.vue"
 import UserMenu from "@/components/navs/UserMenu.vue"
+import Spinner from "@/components/misc/Spinner.vue"
 import { ref, computed } from "vue"
 import orderApi from "@/services/order.js"
 
@@ -38,8 +39,12 @@ orderApi.getUserOrderHistory()
 
                     <h1 class="text-lg font-bold">Riwayat Pesanan</h1>
                     
+                    <div v-show="orders.length == 0" class="text-center pt-12">
+                        <Spinner />
+                    </div>
+
                     <!-- start order box -->
-                    <div class="pt-6 flex flex-col gap-y-6">
+                    <div v-show="orders.length > 0" class="pt-6 flex flex-col gap-y-6">
                         <div v-for="order,index in orders" :key="index" class="border border-neutral-200 px-4 rounded-md shadow-md">
                             <div class="py-4 border-b border-b-neutral-200 flex items-center gap-x-4">
                                 <IconShopBagSolid :class="'text-purple-900 lg:h-7 lg:w-7'" />

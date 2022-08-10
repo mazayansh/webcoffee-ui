@@ -17,6 +17,6 @@ defineProps(['product'])
             <router-link :to="{name: 'product', params: {id: product.id}}">{{ product.name }}</router-link>
         </h2>
         <p>{{ product.aftertaste }}</p>
-        <p class="text-lg">{{ $filters.formatRupiah(parseInt(product.price)) }}</p>
+        <p class="text-lg text-purple-900">{{ $filters.formatRupiah(parseInt(product.price)) }}</p>
     </div>
 </template>

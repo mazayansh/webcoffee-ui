@@ -11,6 +11,9 @@ import { useCartStore } from "@/stores/cart.js"
 import cartApi from "@/services/cart.js"
 import rajanOngkirApi from "@/services/rajaOngkir.js"
 
+import { useIndexStore } from "@/stores/index.js"
+const { togglePageLoading } = useIndexStore()
+
 const { fetchCartItemList, fetchShippingInfo } = useCartStore()
 const { cartItems, shippingInformation } = storeToRefs(useCartStore())
 
@@ -77,8 +80,10 @@ const breadcumbItems = [
 const router = useRouter()
 
 function submitShippingAddress() {
+    togglePageLoading()
     cartApi.saveShippingAddress(shippingInfo.value)
         .then(response => {
+            togglePageLoading()
             useCartStore().shippingInformation = shippingInfo.value
             router.push({ name: 'shipping' })
         })
@@ -135,6 +140,7 @@ function submitShippingAddress() {
                                     :options="cityOptions" 
                                     v-model="shippingInfo.city_code"
                                     :class="['w-full bg-white', shippingInfo.state == '' ? 'text-neutral-500' : '']"
+                                    :disabled="cityOptions.length == 0"
                                     required="required" aria-required="true">
                                         <template #placeholder>
                                             <option value="" selected="selected">--- Select City ---</option>

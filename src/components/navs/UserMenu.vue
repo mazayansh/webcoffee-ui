@@ -19,7 +19,7 @@ const { user } = storeToRefs(useUserStore())
                     <div class="w-14">
                         <img src="../../assets/images/user.png" class="w-full rounded-full">
                     </div>
-                    <div class="text-center">
+                    <div v-if="user.customer" class="text-center">
                         <span class="font-semibold">{{ `${user.customer.first_name} ${user.customer.last_name}` }}</span>
                     </div>
                 </div>

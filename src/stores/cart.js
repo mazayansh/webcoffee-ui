@@ -21,10 +21,10 @@ export const useCartStore = defineStore({
   }),
   actions: {
     fetchCartItemList() {
-      cartApi.indexCartItem()
-        .then(response => {
-          this.cartItems = response.data.data
-        })
+      return cartApi.indexCartItem()
+              .then(response => {
+                this.cartItems = response.data.data
+              })
     },
     fetchShippingInfo() {
       cartApi.getShippingInfo()

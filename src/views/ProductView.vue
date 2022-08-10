@@ -87,12 +87,15 @@ function decreaseQuantity() {
 
 let showAddToCartNotif = ref(false)
 let cartItem = ref({})
+let isAddToCartBtnDisabled = ref(false)
 
 const addToCart = async () => {
 	await setProductVariantId(form.weight)
+	isAddToCartBtnDisabled.value = true
 
 	cartApi.addToCart(form)
 		.then(response => {
+			isAddToCartBtnDisabled.value = false
 			cartItem.value = response.data.cart_item
 			showAddToCartNotif.value = true
 			setTimeout(() => {
@@ -169,8 +172,8 @@ onUpdated(() => {
 	                                </button>
 	                            </div>
 	                        </div>
-	                        <button type="submit" class="font-bold flex justify-center w-full py-2 px-4 border border-purple-900 hover:bg-purple-900 hover:text-white"
-	                            title="Add to Cart">
+	                        <button type="submit" class="font-bold flex justify-center w-full py-2 px-4 border border-purple-900 hover:bg-purple-900 hover:text-white disabled:opacity-50"
+	                            title="Add to Cart" :disabled="isAddToCartBtnDisabled">
 	                            <IconShoppingCart :class="'mr-4 h-5 w-5'" />
 	                            {{ $filters.formatRupiah(totalPrice) }}
 	                        </button>
