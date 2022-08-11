@@ -15,7 +15,7 @@ defineProps(['cartItem'])
 		</div>
 		<div class="grid grid-cols-5 gap-4 p-4 items-center">
 			<div class="col-span-2">
-				<img src="../../assets/images/Bali-Blue-Moon-Dark-Roast-Coffee-Coffee-Bean-_-Tea-Leaf-Store-1619088898_1512x.webp" alt="Bali-Blue-Moon-Dark-Roast-Coffee" class="h-full w-full">
+				<img :src="cartItem.featured_image_url" :alt="cartItem.product_name" class="h-full w-full">
 			</div>
 			<div class="col-start-3 col-span-3 flex flex-col gap-y-2">
 				<h3 class="uppercase">{{ cartItem.product_name }}</h3>

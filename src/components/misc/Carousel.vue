@@ -1,17 +1,6 @@
 <script setup>
 import IconChevronRight from "@/components/icons/IconChevronRight.vue"
 defineProps(['medias'])
-// const medias = [
-//     {
-//         path: '/src/assets/images/Bali-Blue-Moon-Dark-Roast-Coffee-Coffee-Bean-_-Tea-Leaf-Store-1619088898_1512x.webp',
-//     },
-//     {
-//         path: '/src/assets/images/mocha-java-coffee-1lb-whole-bean_1512x.webp',
-//     },
-//     {
-//         path: '/src/assets/images/organic-sumatra-coffee-12oz-whole-bean_1512x.webp',
-//     }
-// ]
 </script>
 
 <template>
