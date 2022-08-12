@@ -11,6 +11,9 @@ import { useCartStore } from "@/stores/cart.js"
 import cartApi from "@/services/cart.js"
 import rajanOngkirApi from "@/services/rajaOngkir.js"
 
+import { useUserStore } from "@/stores/user.js"
+const { user } = storeToRefs(useUserStore()) 
+
 import { useIndexStore } from "@/stores/index.js"
 const { togglePageLoading } = useIndexStore()
 
@@ -112,7 +115,7 @@ function submitShippingAddress() {
                         <form action="#" class="flex flex-col gap-y-8" @submit.prevent="submitShippingAddress">
                             <div class="flex flex-col items-start xl:flex-row xl:justify-between xl:items-center gap-y-2">
                                 <legend class="text-lg">Contact information</legend>
-                                <span>
+                                <span v-if="!user">
                                     Already have an account?
                                     <router-link :to="{ name: 'login' }" class="underline">Log in</router-link>
                                 </span>
