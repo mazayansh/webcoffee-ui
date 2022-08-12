@@ -57,8 +57,11 @@ orderApi.getUserOrderHistory()
                             <div class="py-4 border-b border-b-neutral-200 flex items-center gap-x-4">
                                 <IconShopBagSolid :class="'text-purple-900 lg:h-7 lg:w-7'" />
                                 <p class="grow ">{{ order.order_date }} WIB</p>
-                                <div class="rounded-md py-1 px-2 bg-green-100">
+                                <div v-if="order.order_status == 'Pembayaran Diterima'" class="rounded-md py-1 px-2 bg-green-100">
                                     <span class="font-semibold text-green-600">{{ order.order_status }}</span>
+                                </div>
+                                <div v-else class="rounded-md py-1 px-2 bg-amber-100">
+                                    <span class="font-semibold text-amber-500">{{ order.order_status }}</span>
                                 </div>
                             </div>
                             <div class="py-4">
@@ -67,7 +70,7 @@ orderApi.getUserOrderHistory()
                                         <img :src="order.first_order_item.product_featured_image_url" class="rounded-md">
                                     </div>
                                     <div class="grow">
-                                        <router-link :to="{ name: 'order-detail', params: { id: order.order_id } }" class="block font-semibold text-purple-900">{{ order.first_order_item.product_name }}</router-link>
+                                        <router-link :to="{ name: 'order-detail', params: { id: order.order_id } }" class="block font-semibold">{{ order.first_order_item.product_name }}</router-link>
                                         <span>{{ order.first_order_item.product_quantity }} barang</span>
                                     </div>
                                 </div>
@@ -82,7 +85,7 @@ orderApi.getUserOrderHistory()
                                         </div>
                                     </div>
                                     <div>
-                                        <router-link :to="{ name: 'order-detail', params: { id: order.order_id } }" class="py-2 px-4 rounded-md bg-purple-900 text-white font-semibold">
+                                        <router-link :to="{ name: 'order-detail', params: { id: order.order_id } }" class="py-2 px-4 rounded-md border border-green-600 text-green-600 font-semibold hover:bg-green-600 hover:text-white">
                                             Lihat detail
                                         </router-link>
                                     </div>
