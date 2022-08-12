@@ -104,8 +104,12 @@ const addToCart = async () => {
 		})	
 }
 
+import { useRouter } from "vue-router"
+const router = useRouter()
+
 const closeAddToCartNotif = () => {
 	showAddToCartNotif.value = false
+	router.push({ name:'home' })
 }
 
 onUpdated(() => {
