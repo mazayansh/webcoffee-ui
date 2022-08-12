@@ -15,10 +15,15 @@ function hideUserMenu() {
 }
 
 const orders = ref([])
+let ordersLoading = ref(true)
 
 orderApi.getUserOrderHistory()
     .then(response => {
+        ordersLoading.value = false
         orders.value = response.data.data
+    })
+    .catch(error => {
+        ordersLoading.value = false
     })
 </script>
 
@@ -39,12 +44,15 @@ orderApi.getUserOrderHistory()
 
                     <h1 class="text-lg font-bold">Riwayat Pesanan</h1>
                     
-                    <div v-show="orders.length == 0" class="text-center pt-12">
+                    <div v-show="ordersLoading" class="text-center pt-12">
                         <Spinner />
                     </div>
 
                     <!-- start order box -->
-                    <div v-show="orders.length > 0" class="pt-6 flex flex-col gap-y-6">
+                    <div v-show="!ordersLoading" class="pt-6 flex flex-col gap-y-6">
+                        <div v-if="orders.length == 0" class="text-center pt-12">
+                            Belum ada riwayat pesanan.
+                        </div>
                         <div v-for="order,index in orders" :key="index" class="border border-neutral-200 px-4 rounded-md shadow-md">
                             <div class="py-4 border-b border-b-neutral-200 flex items-center gap-x-4">
                                 <IconShopBagSolid :class="'text-purple-900 lg:h-7 lg:w-7'" />
