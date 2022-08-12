@@ -1,16 +1,11 @@
 <script setup>
 import IconCross from '@/components/icons/IconCross.vue'
-import ModalConfirmRemoveCartItem from "@/components/modals/ModalConfirmRemoveCartItem.vue"
 import { computed, toRefs } from 'vue'
 import { useIndexStore } from "@/stores/index.js"
-import { storeToRefs } from "pinia"
 
 const props = defineProps(['cartItem'])
 const { cartItem } = toRefs(props)
 const emit = defineEmits(['updateCartItem','removeCartItem'])
-
-const { toggleModalConfirmRemoveCartItem } = useIndexStore()
-let { isModalConfirmRemoveCartItemVisible } = storeToRefs(useIndexStore())
 
 const subtotalPrice = computed(() => {
     return cartItem.value.quantity * cartItem.value.price_per_item
@@ -28,15 +23,14 @@ const decreaseQuantity = async (cartItem) => {
     }
 }
 
-const removeCartItem = (cartItem) => {
+const { toggleModalConfirmRemoveCartItem } = useIndexStore()
+const removeCartItem = () => {
     toggleModalConfirmRemoveCartItem()
-    emit('removeCartItem', cartItem.id)
+    emit('removeCartItem', cartItem.value.id)
 }
 </script>
 
 <template>
-    <ModalConfirmRemoveCartItem v-show="isModalConfirmRemoveCartItemVisible" @confirm-remove="removeCartItem(cartItem)" />
-
     <div class="py-4 px-2 border-b border-b-neutral-300 flex flex-wrap md:flex-nowrap justify-between gap-y-4 md:items-center md:gap-x-4">
         <div class="basis-2/6 md:basis-1/12">
             <img :src="cartItem.featured_image_url" :alt="cartItem.product_name" />
@@ -63,7 +57,7 @@ const removeCartItem = (cartItem) => {
         </div>
         <div class="grow-0 self-center md:basis-2/12 md:flex md:items-center md:justify-between">
             <span class="font-bold">{{ $filters.formatRupiah(parseInt(subtotalPrice)) }}</span>
-            <button class="hidden md:block text-neutral-400" @click.prevent="toggleModalConfirmRemoveCartItem">
+            <button class="hidden md:block text-neutral-400" @click.prevent="removeCartItem">
                 <IconCross />
             </button>
         </div>

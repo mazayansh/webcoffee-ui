@@ -8,7 +8,7 @@ import { storeToRefs } from "pinia"
 import { ref, computed } from "vue"
 
 import { useIndexStore } from "@/stores/index.js"
-const { togglePageLoading } = useIndexStore()
+const { togglePageLoading, toggleModalConfirmRemoveCartItem } = useIndexStore()
 
 const { fetchCartItemList }  = useCartStore()
 const { cartItems } = storeToRefs(useCartStore())
@@ -33,13 +33,22 @@ function updateCartItem(cartItem) {
     cartApi.updateCartItem(cartItem.id, {quantity: cartItem.quantity})
 }
 
-function removeCartItem(cartItemId) {
+let { isModalConfirmRemoveCartItemVisible } = storeToRefs(useIndexStore())
+import ModalConfirmRemoveCartItem from "@/components/modals/ModalConfirmRemoveCartItem.vue"
+let selectedCartItemId = ref(null)
+
+function setSelectedCartItemId(cartItemId) {
+    selectedCartItemId.value = cartItemId
+}
+
+function confirmRemoveCartItem() {
+    toggleModalConfirmRemoveCartItem()
     togglePageLoading()
-    cartApi.removeCartItem(cartItemId)
+    cartApi.removeCartItem(selectedCartItemId.value)
         .then(response => {
             togglePageLoading()
             cartItems.value = cartItems.value.filter((cartItem) => {
-                return cartItem.id != cartItemId
+                return cartItem.id != selectedCartItemId.value
             })
         })
 }
@@ -68,7 +77,7 @@ function removeCartItem(cartItemId) {
                         </div>
                     </div>
                     <div v-if="!isCartEmpty">
-                        <CartRowItem v-for="cartItem,index in cartItems" :key="index" :cart-item="cartItem" @update-cart-item="updateCartItem" @remove-cart-item="removeCartItem" />
+                        <CartRowItem v-for="cartItem,index in cartItems" :key="index" :cart-item="cartItem" @update-cart-item="updateCartItem" @remove-cart-item="setSelectedCartItemId" />
                         </div>
                     <div v-else class="text-center py-8 px-4">
                         <p>Keranjang belanja kosong</p>
@@ -95,4 +104,6 @@ function removeCartItem(cartItemId) {
             </div>
         </div>
     </main>
+
+    <ModalConfirmRemoveCartItem v-show="isModalConfirmRemoveCartItemVisible" @confirm-remove="confirmRemoveCartItem" />
 </template>
