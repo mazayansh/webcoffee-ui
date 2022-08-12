@@ -48,6 +48,9 @@ const filterData = ref([
 ])
 
 let resetFilterActiveStatus = ref(false)
+
+import { useIndexStore } from "@/stores/index.js"
+const { productsLoading } = storeToRefs(useIndexStore())
 </script>
 
 <template>
@@ -72,10 +75,13 @@ let resetFilterActiveStatus = ref(false)
 						
 						<BaseSelect :label="'Sort'" :name="'sort'" :options="sortOptions" v-model="sort" />
 					</div>
-					<div class="grid grid-cols-2 md:grid-cols-3 gap-4 py-6">
+					<div v-show="!productsLoading" class="grid grid-cols-2 md:grid-cols-3 gap-4 py-6">
 						<ProductGridItem v-for="product in products" :key="product.id" :product="product" />
+						<div v-show="products.length == 0" class="pt-12 text-center col-start-2">
+							Produk tidak ditemukan.
+						</div>
 					</div>
-					<div v-show="products.length == 0" class="text-center pt-12">
+					<div v-show="productsLoading" class="text-center pt-12">
 						<Spinner />
 					</div>
 				</div>

@@ -33,13 +33,24 @@ const toggleFilter = (filterGroupId,item) => {
     }
 }
 
+import { useIndexStore } from "@/stores/index.js"
+const { showProductsLoading, hideProductsLoading } = useIndexStore()
+
 function filterProduct(isActive, newFilterQuery) {
+    showProductsLoading()
+
     if (isActive == true) {
          filterQuery = `${filterQuery}+${newFilterQuery}`
      } else {
          filterQuery = filterQuery.replace(`+${newFilterQuery}`, '')
      }
      fetchProductList(1,encodeURIComponent(sort),encodeURIComponent(filterQuery.substring(1)))
+        .then(() => {
+            hideProductsLoading()
+        })
+        .catch(error => {
+            hideProductsLoading()
+        })
 }
 
 function resetFilterProduct() {
@@ -52,7 +63,6 @@ watch(resetFilterActiveStatus, (newResetFilterActiveStatus) => {
         setDefaultActiveStatusToFilterItems()
     }
 })
-
 </script>
 
 <template>

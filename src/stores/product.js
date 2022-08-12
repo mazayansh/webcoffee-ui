@@ -1,5 +1,6 @@
 import productApi from "@/services/product.js"
 import { defineStore } from 'pinia'
+import { useIndexStore } from "@/stores/index.js"
 
 export const useProductStore = defineStore({
   id: 'product',
@@ -39,11 +40,16 @@ export const useProductStore = defineStore({
   }),
   actions: {
     fetchProductList(page,sort="-created_at",filter=null,search=null) {
+      const index = useIndexStore()
       return productApi.index(page,sort,filter,search)
               .then(response => {
+                index.hideProductsLoading()
                 this.products = response.data.data
                 this.meta = response.data.meta
                 this.searchKeyword = search
+              })
+              .catch(error => {
+                index.hideProductsLoading()
               })
     },
     fetchProductById(id) {

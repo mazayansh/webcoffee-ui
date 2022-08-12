@@ -8,9 +8,16 @@ export const useIndexStore = defineStore({
     isModalSearchProductVisible: false,
     isMobileFilterProductSidebarVisible: false,
     isModalConfirmRemoveCartItemVisible: false,
-    pageLoading: false
+    pageLoading: false,
+    productsLoading: true
   }),
   actions: {
+    showProductsLoading() {
+      this.productsLoading = true
+    },
+    hideProductsLoading() {
+      this.productsLoading = false
+    },
     togglePageLoading() {
       this.pageLoading = !this.pageLoading
     },
